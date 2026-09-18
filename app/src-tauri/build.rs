@@ -40,6 +40,9 @@ fn main() {
         })
         .debug(false)
         .warnings(false);
+    if env::var_os("CARGO_FEATURE_ASSET_CAPTURE").is_some() {
+        build.define("TT_ASSET_CAPTURE", None);
+    }
     for name in [
         "gbrt",
         "gbrt_data_mod",

@@ -43,8 +43,6 @@ counts are candidates, not a measure of recovered game logic. Differential tests
 compare generated execution to the same runtime's interpreter; independent emulator
 comparison and gameplay testing are still needed for a compatibility claim.
 
-Initial validation and limitations are recorded in [docs/baseline.md](docs/baseline.md).
-
 ## Embedded app
 
 The `app/` directory contains a Tauri app using React, TypeScript, and Tailwind.
@@ -55,5 +53,5 @@ Run `make app-install app-dev` after generating the C core. See
 ## CI app packages
 
 GitHub Actions builds optimized macOS and Android packages without a ROM. See
-[release builds](docs/releases.md) and [source bundle](app/core/README.md).
+[release builds](releases.md) and [source bundle](app/core/README.md).
 The app has checksummed saves, previous-generation backups, and pause-menu export/import.

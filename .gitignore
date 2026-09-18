@@ -18,3 +18,5 @@ __pycache__/
 *.jks
 *.keystore
 docs/
+
+/assets/extracted/

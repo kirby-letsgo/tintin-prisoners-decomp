@@ -7,6 +7,9 @@ edition = "2021"
 name = "tintin_player_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
+[features]
+asset-capture = []
+
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 cc = { version = "1", features = ["parallel"] }

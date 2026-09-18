@@ -10,6 +10,43 @@ static GBContext *game;
 static int16_t pcm[TT_AUDIO_FRAMES * 2];
 static uint32_t samples;
 
+#ifdef TT_ASSET_CAPTURE
+#include "ppu.h"
+/* Debug-only, versioned portable snapshot taken at the PPU VBlank callback. */
+#define TT_GRAPHICS_BYTES (32 + 16384 + 160 + 64 + 64 + TT_PIXELS)
+static uint8_t graphics[TT_GRAPHICS_BYTES];
+static int graphics_ready;
+static void capture_graphics(GBContext *ctx, const uint8_t *framebuffer) {
+    (void)framebuffer;
+    GBPPU *ppu = (GBPPU *)ctx->ppu;
+    memcpy(graphics, "TTVRAM01", 8);
+    uint32_t frame = (uint32_t)ctx->completed_frames;
+    for (unsigned i = 0; i < 4; i++) graphics[8 + i] = (uint8_t)(frame >> (8 * i));
+    graphics[12] = ppu->lcdc;
+    graphics[13] = ppu->ly;
+    graphics[14] = ppu->scx;
+    graphics[15] = ppu->scy;
+    memcpy(graphics + 32, ctx->vram, 16384);
+    memcpy(graphics + 32 + 16384, ctx->oam, 160);
+    memcpy(graphics + 32 + 16384 + 160, ppu->obj_palette_ram, 64);
+    memcpy(graphics + 32 + 16384 + 160 + 64, ppu->bg_palette_ram, 64);
+    const uint32_t *pixels = gb_get_framebuffer(ctx);
+    uint8_t *rgba = graphics + 32 + 16384 + 160 + 128;
+    for (unsigned i = 0; i < 160 * 144; i++) {
+        rgba[i*4] = (uint8_t)(pixels[i] >> 16);
+        rgba[i*4+1] = (uint8_t)(pixels[i] >> 8);
+        rgba[i*4+2] = (uint8_t)pixels[i];
+        rgba[i*4+3] = 255;
+    }
+    graphics_ready = 1;
+}
+size_t tt_graphics_snapshot(uint8_t *out, size_t capacity) {
+    if (!game || !graphics_ready || capacity < sizeof(graphics)) return 0;
+    memcpy(out, graphics, sizeof(graphics));
+    return sizeof(graphics);
+}
+#endif
+
 static void audio_sample(GBContext *ctx, int16_t left, int16_t right) {
     (void)ctx;
     if (samples < TT_AUDIO_FRAMES) {
@@ -23,6 +60,9 @@ void tt_close(void) {
     game = NULL;
     g_joypad_buttons = g_joypad_dpad = 0xff;
     samples = 0;
+#ifdef TT_ASSET_CAPTURE
+    graphics_ready = 0;
+#endif
 }
 int tt_load(const uint8_t *rom, size_t len) {
     if (!rom || len != 1048576) return 0;
@@ -36,6 +76,9 @@ int tt_load(const uint8_t *rom, size_t len) {
     gb_context_reset(next, true);
     GBPlatformCallbacks callbacks = {0};
     callbacks.on_audio_sample = audio_sample;
+#ifdef TT_ASSET_CAPTURE
+    callbacks.on_vblank = capture_graphics;
+#endif
     gb_set_platform_callbacks(next, &callbacks);
     tt_close();
     game = next;
@@ -94,6 +137,9 @@ static GBContext *read_candidate(const char *path) {
     }
     GBPlatformCallbacks callbacks = {0};
     callbacks.on_audio_sample = audio_sample;
+#ifdef TT_ASSET_CAPTURE
+    callbacks.on_vblank = capture_graphics;
+#endif
     gb_set_platform_callbacks(candidate, &callbacks);
     return candidate;
 }

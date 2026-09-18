@@ -151,3 +151,64 @@ mod integration_tests {
         assert_eq!(unsafe { tt_tick(0, packet.as_mut_ptr(), packet.len()) }, 0);
     }
 }
+
+#[cfg(feature = "asset-capture")]
+mod asset_capture {
+    use crate::*;
+    extern "C" {
+        fn tt_graphics_snapshot(out: *mut u8, capacity: usize) -> usize;
+    }
+    #[test]
+    #[ignore = "local ROM required; invoked by tools/sprites.py capture"]
+    fn capture_sprite_route() {
+        let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..");
+        let path = std::env::var("TINTIN_CAPTURE_ROM").expect("Use tools/sprites.py capture");
+        let out = PathBuf::from(std::env::var("TINTIN_CAPTURE_OUT").unwrap());
+        assert!(out.starts_with(root.canonicalize().unwrap()));
+        std::fs::create_dir_all(&out).unwrap();
+        let rom = std::fs::read(path).unwrap();
+        validate_rom(&rom).unwrap();
+        let _guard = CORE.lock().unwrap();
+        assert_eq!(unsafe { tt_load(rom.as_ptr(), rom.len()) }, 1);
+        let mut packet = vec![0; PACKET_MAX];
+        let mut graphics = vec![0; 32 + 16384 + 160 + 128 + 160 * 144 * 4];
+        let mut frame = 0;
+        let mut last_bucket = u32::MAX;
+        let mut count = 0;
+        for _ in 0..6000 {
+            let buttons = if (1250..1260).contains(&frame) || (2000..2010).contains(&frame) {
+                16
+            } else if (1600..1610).contains(&frame) || (2400..2410).contains(&frame) {
+                128
+            } else if (3100..3450).contains(&frame) {
+                1
+            } else if (3500..3800).contains(&frame) {
+                2
+            } else {
+                0
+            };
+            assert!(unsafe { tt_tick(buttons, packet.as_mut_ptr(), packet.len()) } > 0);
+            frame = u32::from_le_bytes(packet[4..8].try_into().unwrap());
+            if frame >= 1200 && frame / 6 != last_bucket {
+                let n = unsafe { tt_graphics_snapshot(graphics.as_mut_ptr(), graphics.len()) };
+                if n > 0 {
+                    std::fs::write(out.join(format!("frame-{frame:05}.bin")), &graphics[..n])
+                        .unwrap();
+                    count += 1;
+                }
+                last_bucket = frame / 6;
+            }
+            if frame >= 4200 {
+                break;
+            }
+        }
+        unsafe {
+            tt_close();
+        }
+        assert!(
+            frame >= 4200 && count > 400,
+            "Capture route did not complete"
+        );
+        println!("Captured {count} VBlank snapshots through frame {frame}");
+    }
+}
