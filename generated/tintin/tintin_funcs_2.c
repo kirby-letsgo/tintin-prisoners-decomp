@@ -38373,7 +38373,7 @@ loc_27cb:
     /* 27cb */     gbrt_timed_call(ctx, 0x155c, 0x27ce);
     if (gbrt_generated_safepoint(ctx)) return;
     if (ctx->single_step_mode) return;
-    if (gb_resolve_rom_bank(ctx, 0x155c) == 0) func_155c(ctx);
+    if (gb_resolve_rom_bank(ctx, 0x155c) == 0) tintin_stage_actor_frame(ctx);
     return;
     if (ctx->single_step_mode) return;
     goto loc_27ce; /* fallthrough */

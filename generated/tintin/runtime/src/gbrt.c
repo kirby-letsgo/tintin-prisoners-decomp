@@ -462,6 +462,22 @@ static void gbrt_log_vram_write(GBContext* ctx,
             (unsigned)gb_resolve_rom_bank(ctx, (uint16_t)(ctx->hl - 1)));
 }
 
+void gbrt_log_actor_write(GBContext* ctx, uint16_t addr, uint8_t value) {
+    /* Opt-in actor-descriptor diagnostics; no extra guest reads or writes. */
+    if (ctx->ppu_trace_file &&
+        ((addr >= 0xDE42 && addr < 0xDE72) ||
+         (addr >= 0xC48C && addr <= 0xC49F) || (addr >= 0xDF72 && addr <= 0xDF74) || (addr == 0xFF8F && ctx->pc == 0x3599)) &&
+        gbrt_ppu_trace_enabled_for_frame(ctx, ctx->completed_frames + 1)) {
+        fprintf((FILE*)ctx->ppu_trace_file,
+                "[ANIM-WRITE] frame=%llu pc=%04X bank=%u addr=%04X val=%02X hl=%04X de=%04X bc=%04X sp=%04X wbank=%u source_bank=%u\n",
+                (unsigned long long)(ctx->completed_frames + 1), ctx->pc,
+                (unsigned)gb_resolve_rom_bank(ctx, ctx->pc), addr, value,
+                ctx->hl, ctx->de, ctx->bc, ctx->sp, ctx->wram_bank,
+                (unsigned)gb_resolve_rom_bank(ctx, (uint16_t)(ctx->hl - 1)));
+    }
+
+}
+
 
 /* ============================================================================
  * Context Management
@@ -2781,6 +2797,8 @@ static void gbrt_write8_impl(GBContext* ctx,
         return;  /* Bus conflict - write ignored */
     }
     
+    if (ctx->ppu_trace_file) gbrt_log_actor_write(ctx, addr, value);
+
     /* MBC Write Handling */
     if (addr < 0x8000) {
         /* ================================================================

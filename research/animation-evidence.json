@@ -1,0 +1,584 @@
+{
+  "rom_sha256": "4c859ad08f74bcc004f01a69a7d380cdcdea79eb731a09f935337921096e4c20",
+  "frames": "2480-2560",
+  "verified_selections": 66,
+  "verified_staged_records": 24,
+  "verified_descriptor_bytes": 1152,
+  "observed_records": [
+    {
+      "index": 147,
+      "loads": 5,
+      "address": "609D",
+      "metadata": [
+        2,
+        0,
+        2
+      ]
+    },
+    {
+      "index": 163,
+      "loads": 2,
+      "address": "63CD",
+      "metadata": [
+        2,
+        0,
+        2
+      ]
+    },
+    {
+      "index": 164,
+      "loads": 2,
+      "address": "6400",
+      "metadata": [
+        2,
+        0,
+        2
+      ]
+    },
+    {
+      "index": 165,
+      "loads": 2,
+      "address": "6433",
+      "metadata": [
+        2,
+        0,
+        2
+      ]
+    },
+    {
+      "index": 166,
+      "loads": 2,
+      "address": "6466",
+      "metadata": [
+        2,
+        1,
+        2
+      ]
+    },
+    {
+      "index": 167,
+      "loads": 2,
+      "address": "6499",
+      "metadata": [
+        2,
+        1,
+        2
+      ]
+    },
+    {
+      "index": 168,
+      "loads": 2,
+      "address": "64CC",
+      "metadata": [
+        2,
+        0,
+        2
+      ]
+    },
+    {
+      "index": 169,
+      "loads": 2,
+      "address": "64FF",
+      "metadata": [
+        2,
+        0,
+        2
+      ]
+    },
+    {
+      "index": 170,
+      "loads": 2,
+      "address": "6532",
+      "metadata": [
+        2,
+        0,
+        2
+      ]
+    },
+    {
+      "index": 171,
+      "loads": 2,
+      "address": "6565",
+      "metadata": [
+        2,
+        1,
+        2
+      ]
+    },
+    {
+      "index": 172,
+      "loads": 1,
+      "address": "6598",
+      "metadata": [
+        2,
+        1,
+        2
+      ]
+    }
+  ],
+  "selections": [
+    {
+      "frame": 2480,
+      "mapped_animation": 47,
+      "phase": 0,
+      "index": 147,
+      "address": 17016
+    },
+    {
+      "frame": 2482,
+      "mapped_animation": 47,
+      "phase": 0,
+      "index": 147,
+      "address": 17016
+    },
+    {
+      "frame": 2484,
+      "mapped_animation": 47,
+      "phase": 0,
+      "index": 147,
+      "address": 17016
+    },
+    {
+      "frame": 2486,
+      "mapped_animation": 47,
+      "phase": 0,
+      "index": 147,
+      "address": 17016
+    },
+    {
+      "frame": 2488,
+      "mapped_animation": 47,
+      "phase": 0,
+      "index": 147,
+      "address": 17016
+    },
+    {
+      "frame": 2490,
+      "mapped_animation": 47,
+      "phase": 0,
+      "index": 147,
+      "address": 17016
+    },
+    {
+      "frame": 2492,
+      "mapped_animation": 47,
+      "phase": 0,
+      "index": 147,
+      "address": 17016
+    },
+    {
+      "frame": 2494,
+      "mapped_animation": 47,
+      "phase": 0,
+      "index": 147,
+      "address": 17016
+    },
+    {
+      "frame": 2496,
+      "mapped_animation": 47,
+      "phase": 0,
+      "index": 147,
+      "address": 17016
+    },
+    {
+      "frame": 2498,
+      "mapped_animation": 47,
+      "phase": 0,
+      "index": 147,
+      "address": 17016
+    },
+    {
+      "frame": 2500,
+      "mapped_animation": 47,
+      "phase": 0,
+      "index": 147,
+      "address": 17016
+    },
+    {
+      "frame": 2502,
+      "mapped_animation": 47,
+      "phase": 0,
+      "index": 147,
+      "address": 17016
+    },
+    {
+      "frame": 2504,
+      "mapped_animation": 47,
+      "phase": 0,
+      "index": 147,
+      "address": 17016
+    },
+    {
+      "frame": 2506,
+      "mapped_animation": 47,
+      "phase": 0,
+      "index": 147,
+      "address": 17016
+    },
+    {
+      "frame": 2508,
+      "mapped_animation": 47,
+      "phase": 0,
+      "index": 147,
+      "address": 17016
+    },
+    {
+      "frame": 2510,
+      "mapped_animation": 47,
+      "phase": 0,
+      "index": 147,
+      "address": 17016
+    },
+    {
+      "frame": 2511,
+      "mapped_animation": 47,
+      "phase": 0,
+      "index": 147,
+      "address": 17016
+    },
+    {
+      "frame": 2512,
+      "mapped_animation": 57,
+      "phase": 0,
+      "index": 163,
+      "address": 17076
+    },
+    {
+      "frame": 2513,
+      "mapped_animation": 57,
+      "phase": 0,
+      "index": 163,
+      "address": 17076
+    },
+    {
+      "frame": 2514,
+      "mapped_animation": 57,
+      "phase": 0,
+      "index": 163,
+      "address": 17076
+    },
+    {
+      "frame": 2515,
+      "mapped_animation": 57,
+      "phase": 0,
+      "index": 163,
+      "address": 17076
+    },
+    {
+      "frame": 2516,
+      "mapped_animation": 57,
+      "phase": 0,
+      "index": 163,
+      "address": 17076
+    },
+    {
+      "frame": 2517,
+      "mapped_animation": 57,
+      "phase": 1,
+      "index": 164,
+      "address": 17078
+    },
+    {
+      "frame": 2518,
+      "mapped_animation": 57,
+      "phase": 1,
+      "index": 164,
+      "address": 17078
+    },
+    {
+      "frame": 2519,
+      "mapped_animation": 57,
+      "phase": 1,
+      "index": 164,
+      "address": 17078
+    },
+    {
+      "frame": 2520,
+      "mapped_animation": 57,
+      "phase": 1,
+      "index": 164,
+      "address": 17078
+    },
+    {
+      "frame": 2521,
+      "mapped_animation": 57,
+      "phase": 1,
+      "index": 164,
+      "address": 17078
+    },
+    {
+      "frame": 2522,
+      "mapped_animation": 57,
+      "phase": 2,
+      "index": 165,
+      "address": 17080
+    },
+    {
+      "frame": 2523,
+      "mapped_animation": 57,
+      "phase": 2,
+      "index": 165,
+      "address": 17080
+    },
+    {
+      "frame": 2524,
+      "mapped_animation": 57,
+      "phase": 2,
+      "index": 165,
+      "address": 17080
+    },
+    {
+      "frame": 2525,
+      "mapped_animation": 57,
+      "phase": 2,
+      "index": 165,
+      "address": 17080
+    },
+    {
+      "frame": 2526,
+      "mapped_animation": 57,
+      "phase": 2,
+      "index": 165,
+      "address": 17080
+    },
+    {
+      "frame": 2527,
+      "mapped_animation": 57,
+      "phase": 3,
+      "index": 166,
+      "address": 17082
+    },
+    {
+      "frame": 2528,
+      "mapped_animation": 57,
+      "phase": 3,
+      "index": 166,
+      "address": 17082
+    },
+    {
+      "frame": 2529,
+      "mapped_animation": 57,
+      "phase": 3,
+      "index": 166,
+      "address": 17082
+    },
+    {
+      "frame": 2530,
+      "mapped_animation": 57,
+      "phase": 3,
+      "index": 166,
+      "address": 17082
+    },
+    {
+      "frame": 2531,
+      "mapped_animation": 57,
+      "phase": 3,
+      "index": 166,
+      "address": 17082
+    },
+    {
+      "frame": 2532,
+      "mapped_animation": 57,
+      "phase": 4,
+      "index": 167,
+      "address": 17084
+    },
+    {
+      "frame": 2533,
+      "mapped_animation": 57,
+      "phase": 4,
+      "index": 167,
+      "address": 17084
+    },
+    {
+      "frame": 2534,
+      "mapped_animation": 57,
+      "phase": 4,
+      "index": 167,
+      "address": 17084
+    },
+    {
+      "frame": 2535,
+      "mapped_animation": 57,
+      "phase": 4,
+      "index": 167,
+      "address": 17084
+    },
+    {
+      "frame": 2536,
+      "mapped_animation": 57,
+      "phase": 4,
+      "index": 167,
+      "address": 17084
+    },
+    {
+      "frame": 2537,
+      "mapped_animation": 57,
+      "phase": 5,
+      "index": 168,
+      "address": 17086
+    },
+    {
+      "frame": 2538,
+      "mapped_animation": 57,
+      "phase": 5,
+      "index": 168,
+      "address": 17086
+    },
+    {
+      "frame": 2539,
+      "mapped_animation": 57,
+      "phase": 5,
+      "index": 168,
+      "address": 17086
+    },
+    {
+      "frame": 2540,
+      "mapped_animation": 57,
+      "phase": 5,
+      "index": 168,
+      "address": 17086
+    },
+    {
+      "frame": 2541,
+      "mapped_animation": 57,
+      "phase": 5,
+      "index": 168,
+      "address": 17086
+    },
+    {
+      "frame": 2542,
+      "mapped_animation": 57,
+      "phase": 6,
+      "index": 169,
+      "address": 17088
+    },
+    {
+      "frame": 2543,
+      "mapped_animation": 57,
+      "phase": 6,
+      "index": 169,
+      "address": 17088
+    },
+    {
+      "frame": 2544,
+      "mapped_animation": 57,
+      "phase": 6,
+      "index": 169,
+      "address": 17088
+    },
+    {
+      "frame": 2545,
+      "mapped_animation": 57,
+      "phase": 6,
+      "index": 169,
+      "address": 17088
+    },
+    {
+      "frame": 2546,
+      "mapped_animation": 57,
+      "phase": 6,
+      "index": 169,
+      "address": 17088
+    },
+    {
+      "frame": 2547,
+      "mapped_animation": 57,
+      "phase": 7,
+      "index": 170,
+      "address": 17090
+    },
+    {
+      "frame": 2548,
+      "mapped_animation": 57,
+      "phase": 7,
+      "index": 170,
+      "address": 17090
+    },
+    {
+      "frame": 2549,
+      "mapped_animation": 57,
+      "phase": 7,
+      "index": 170,
+      "address": 17090
+    },
+    {
+      "frame": 2550,
+      "mapped_animation": 57,
+      "phase": 7,
+      "index": 170,
+      "address": 17090
+    },
+    {
+      "frame": 2551,
+      "mapped_animation": 57,
+      "phase": 7,
+      "index": 170,
+      "address": 17090
+    },
+    {
+      "frame": 2552,
+      "mapped_animation": 57,
+      "phase": 8,
+      "index": 171,
+      "address": 17092
+    },
+    {
+      "frame": 2553,
+      "mapped_animation": 57,
+      "phase": 8,
+      "index": 171,
+      "address": 17092
+    },
+    {
+      "frame": 2554,
+      "mapped_animation": 57,
+      "phase": 8,
+      "index": 171,
+      "address": 17092
+    },
+    {
+      "frame": 2555,
+      "mapped_animation": 57,
+      "phase": 8,
+      "index": 171,
+      "address": 17092
+    },
+    {
+      "frame": 2556,
+      "mapped_animation": 57,
+      "phase": 8,
+      "index": 171,
+      "address": 17092
+    },
+    {
+      "frame": 2557,
+      "mapped_animation": 57,
+      "phase": 9,
+      "index": 172,
+      "address": 17094
+    },
+    {
+      "frame": 2558,
+      "mapped_animation": 57,
+      "phase": 9,
+      "index": 172,
+      "address": 17094
+    },
+    {
+      "frame": 2559,
+      "mapped_animation": 57,
+      "phase": 9,
+      "index": 172,
+      "address": 17094
+    },
+    {
+      "frame": 2560,
+      "mapped_animation": 57,
+      "phase": 9,
+      "index": 172,
+      "address": 17094
+    }
+  ],
+  "limitations": "Mapped animation IDs and phases verified; the upstream state-to-animation mapper and full state machine are not recovered."
+}

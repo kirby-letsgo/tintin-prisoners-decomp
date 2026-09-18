@@ -1,10 +1,54 @@
 {
   "rom_sha256": "4c859ad08f74bcc004f01a69a7d380cdcdea79eb731a09f935337921096e4c20",
   "symbols": [
-    {"bank": 0, "address": "0EE0", "generated_name": "func_0ee0", "name": "tintin_upload_actor_tiles_0_to_3", "description": "Upload four tile descriptors from DE42 into actor slot + 00. Tail continuation: saved VRAM-bank AF must already be on the guest stack."},
-    {"bank": 0, "address": "0FED", "generated_name": "func_0fed", "name": "tintin_upload_actor_tiles_4_to_7", "description": "Upload four tile descriptors from DE4E into actor slot + 40. Tail continuation; entered through the upload dispatcher."},
-    {"bank": 0, "address": "10FA", "generated_name": "func_10fa", "name": "tintin_upload_actor_tiles_8_to_11", "description": "Upload four tile descriptors from DE5A into actor slot + 80. Tail continuation; entered through the upload dispatcher."},
-    {"bank": 0, "address": "1207", "generated_name": "func_1207", "name": "tintin_upload_actor_tiles_12_to_15", "description": "Upload four tile descriptors from DE66 into actor slot + C0. Tail continuation; entered through the upload dispatcher."},
-    {"bank": 0, "address": "1314", "generated_name": "func_1314", "name": "tintin_upload_actor_tile_quarter", "description": "Save VRAM bank, select bank 1, dispatch one four-tile batch by DF72 & 7F. See research/graphics.md and graphics_reference.c."}
+    {
+      "bank": 0,
+      "address": "0EE0",
+      "generated_name": "func_0ee0",
+      "name": "tintin_upload_actor_tiles_0_to_3",
+      "description": "Upload four tile descriptors from DE42 into actor slot + 00. Tail continuation: saved VRAM-bank AF must already be on the guest stack."
+    },
+    {
+      "bank": 0,
+      "address": "0FED",
+      "generated_name": "func_0fed",
+      "name": "tintin_upload_actor_tiles_4_to_7",
+      "description": "Upload four tile descriptors from DE4E into actor slot + 40. Tail continuation; entered through the upload dispatcher."
+    },
+    {
+      "bank": 0,
+      "address": "10FA",
+      "generated_name": "func_10fa",
+      "name": "tintin_upload_actor_tiles_8_to_11",
+      "description": "Upload four tile descriptors from DE5A into actor slot + 80. Tail continuation; entered through the upload dispatcher."
+    },
+    {
+      "bank": 0,
+      "address": "1207",
+      "generated_name": "func_1207",
+      "name": "tintin_upload_actor_tiles_12_to_15",
+      "description": "Upload four tile descriptors from DE66 into actor slot + C0. Tail continuation; entered through the upload dispatcher."
+    },
+    {
+      "bank": 0,
+      "address": "1314",
+      "generated_name": "func_1314",
+      "name": "tintin_upload_actor_tile_quarter",
+      "description": "Save VRAM bank, select bank 1, dispatch one four-tile batch by DF72 & 7F. See research/graphics.md and graphics_reference.c."
+    },
+    {
+      "bank": 0,
+      "address": "155C",
+      "generated_name": "func_155c",
+      "name": "tintin_stage_actor_frame",
+      "description": "When upload phase is zero, stage bank-9 frame metadata and 16 tile descriptors, then continue layout setup. See research/animation.md."
+    },
+    {
+      "bank": 0,
+      "address": "357C",
+      "generated_name": "func_357c",
+      "name": "tintin_select_actor_frame_id",
+      "description": "Map animation state, use phase and bank-9 relative sequence table to select DF73/DF74 frame ID; leave ROM bank 1 selected."
+    }
   ]
 }

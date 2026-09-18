@@ -20866,7 +20866,7 @@ loc_02_4109:
     /* 02:4109 */     gbrt_timed_call(ctx, 0x155c, 0x410c);
     if (gbrt_generated_safepoint(ctx)) return;
     if (ctx->single_step_mode) return;
-    if (gb_resolve_rom_bank(ctx, 0x155c) == 0) func_155c(ctx);
+    if (gb_resolve_rom_bank(ctx, 0x155c) == 0) tintin_stage_actor_frame(ctx);
     return;
     if (ctx->single_step_mode) return;
     goto loc_02_410c; /* fallthrough */

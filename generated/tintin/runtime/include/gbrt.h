@@ -1243,6 +1243,7 @@ void gbrt_log_ppu_scanline(GBContext* ctx,
                            uint8_t obp1,
                            uint8_t window_line,
                            bool window_triggered);
+void gbrt_log_actor_write(GBContext* ctx, uint16_t addr, uint8_t value);
 void gbrt_log_ppu_register_write(GBContext* ctx,
                                  uint16_t addr,
                                  uint8_t old_value,

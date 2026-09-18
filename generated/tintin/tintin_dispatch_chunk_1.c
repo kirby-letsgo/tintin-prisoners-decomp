@@ -6383,7 +6383,7 @@ void tintin_dispatch_15(GBContext* ctx, uint16_t addr, uint16_t bank) {
             break;
         case 0x155c:
             switch (bank) {
-                case 0: func_155c(ctx); break;
+                case 0: tintin_stage_actor_frame(ctx); break;
                 default: gbrt_execute_dispatch_fallback(ctx, bank, addr, GB_DISPATCH_FALLBACK_BANK_NOT_COMPILED, 1); break;
             }
             break;

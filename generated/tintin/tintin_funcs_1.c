@@ -30898,6 +30898,7 @@ loc_155a:
     if (gbrt_generated_safepoint(ctx)) return;
     if (ctx->single_step_mode) return;
 loc_155c:
+    /* Named: tintin_stage_actor_frame - When upload phase is zero, stage bank-9 frame metadata and 16 tile descriptors, then continue layout setup. See research/animation.md. */
     /* LD A,($df72) */
     /* 155c */     gb_tick(ctx, 15);
     ctx->a = gb_read8(ctx, GB_WRAMX_BASE + 0x0f72);
@@ -60564,7 +60565,7 @@ loc_282a:
     /* 282a */     gbrt_timed_call(ctx, 0x155c, 0x282d);
     if (gbrt_generated_safepoint(ctx)) return;
     if (ctx->single_step_mode) return;
-    if (gb_resolve_rom_bank(ctx, 0x155c) == 0) func_155c(ctx);
+    if (gb_resolve_rom_bank(ctx, 0x155c) == 0) tintin_stage_actor_frame(ctx);
     return;
     if (ctx->single_step_mode) return;
     goto loc_282d; /* fallthrough */
@@ -71197,7 +71198,7 @@ loc_3576:
     /* 3576 */     gbrt_timed_jump(ctx, 0x357c, 12);
     if (gbrt_generated_safepoint(ctx)) return;
     if (ctx->single_step_mode) return;
-    if (gb_resolve_rom_bank(ctx, 0x357c) == 0) func_357c(ctx);
+    if (gb_resolve_rom_bank(ctx, 0x357c) == 0) tintin_select_actor_frame_id(ctx);
     return;
     if (ctx->single_step_mode) return;
 loc_3578:
@@ -71232,6 +71233,7 @@ loc_357b:
     return;
     if (ctx->single_step_mode) return;
 loc_357c:
+    /* Named: tintin_select_actor_frame_id - Map animation state, use phase and bank-9 relative sequence table to select DF73/DF74 frame ID; leave ROM bank 1 selected. */
     /* LDH A,($FF00+$c7) */
     /* 357c */     gb_tick(ctx, 11);
     ctx->a = gb_read8(ctx, GB_HRAM_BASE + 0x47);
@@ -99235,7 +99237,7 @@ void func_155a(GBContext* ctx) {
     body_0001(ctx);
 }
 
-void func_155c(GBContext* ctx) {
+void tintin_stage_actor_frame(GBContext* ctx) {
     body_0001(ctx);
 }
 
@@ -114675,7 +114677,7 @@ void func_357a(GBContext* ctx) {
     body_0001(ctx);
 }
 
-void func_357c(GBContext* ctx) {
+void tintin_select_actor_frame_id(GBContext* ctx) {
     body_0001(ctx);
 }
 

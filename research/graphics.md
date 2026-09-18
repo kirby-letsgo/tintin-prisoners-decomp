@@ -19,8 +19,8 @@ flowchart LR
     G --> H
 ```
 
-The code that prepares these descriptors and shadow-OAM entries is the next thing
-to trace. The graph does not claim their complete producer has been recovered.
+The descriptor producer is now verified in [animation.md](animation.md).
+The shadow-OAM producer and its complete positioning rules remain to be traced.
 
 ## Named entry points
 
@@ -100,7 +100,5 @@ The command uses your ignored ROM and isolated `logs/code-study/` snapshots.
 It never opens or changes personal app saves. Raw trace output remains local;
 `graphics-evidence.json` is a compact, reviewable result with examples and counts.
 
-The next bounded task is to trace the descriptor producer near `$15D5`, which
-loads `$DE42` and a count of 16. That is a candidate, not a verified animation
-function yet. Recovering its caller and source table should connect named poses
-to the ROM data that needs replacing.
+The next bounded task is the shadow-OAM layout producer after frame staging.
+The bank-9 descriptor source and frame selector are documented in [animation.md](animation.md).

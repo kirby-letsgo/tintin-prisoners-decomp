@@ -121,16 +121,19 @@ static inline void tintin_fast_write8(GBContext* ctx, uint16_t addr, uint8_t val
     }
     if (GBRECOMP_EXPECT(!ctx->dma.active, 1)) {
         if (addr >= 0xC000 && addr < 0xD000) {
+            if (ctx->ppu_trace_file) gbrt_log_actor_write(ctx, addr, value);
             gbrt_note_generated_specialized_write(ctx);
             ctx->wram[addr - 0xC000u] = value;
             return;
         }
         if (addr >= 0xD000 && addr < 0xE000) {
+            if (ctx->ppu_trace_file) gbrt_log_actor_write(ctx, addr, value);
             gbrt_note_generated_specialized_write(ctx);
             ctx->wram[((uint32_t)ctx->wram_bank * 0x1000u) + (addr - 0xD000u)] = value;
             return;
         }
         if (addr >= 0xFF80 && addr < 0xFFFF) {
+            if (ctx->ppu_trace_file) gbrt_log_actor_write(ctx, addr, value);
             gbrt_note_generated_specialized_write(ctx);
             ctx->hram[addr - 0xFF80u] = value;
             return;
@@ -29636,7 +29639,7 @@ void func_1553(GBContext* ctx);
 void func_1554(GBContext* ctx);
 void func_1555(GBContext* ctx);
 void func_155a(GBContext* ctx);
-void func_155c(GBContext* ctx);
+void tintin_stage_actor_frame(GBContext* ctx);
 void func_155d(GBContext* ctx);
 void func_155e(GBContext* ctx);
 void func_155f(GBContext* ctx);
@@ -35473,7 +35476,7 @@ void func_3575(GBContext* ctx);
 void func_3578(GBContext* ctx);
 void func_3579(GBContext* ctx);
 void func_357a(GBContext* ctx);
-void func_357c(GBContext* ctx);
+void tintin_select_actor_frame_id(GBContext* ctx);
 void func_357d(GBContext* ctx);
 void func_357e(GBContext* ctx);
 void func_3580(GBContext* ctx);

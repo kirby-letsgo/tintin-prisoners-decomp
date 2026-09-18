@@ -5,6 +5,10 @@ The first readable game subsystem is [actor tile uploads](graphics.md).
 C; it is a semantic reference, not a replacement for the timing-sensitive code.
 [graphics-evidence.json](graphics-evidence.json) records the local replay evidence.
 
+The next recovered layer is [animation frame selection and staging](animation.md).
+[animation_reference.c](animation_reference.c) shows the table lookup and record
+decoding; [animation-evidence.json](animation-evidence.json) records verified loads.
+
 ## Layers of the project
 
 | Layer | Location | What to read it for |
@@ -40,10 +44,10 @@ hardware timing and allow interrupts and save/restore at the expected points.
 Regeneration overwrites reviewed names and local runtime instrumentation. Reapply:
 
 ```sh
-git apply research/runtime-trace.patch
+git apply --unidiff-zero research/runtime-trace.patch
 python3 tools/name_symbols.py
 python3 tools/core_sources.py record
-python3 tools/study_graphics.py capture
+python3 tools/study_animation.py capture
 ```
 
 Apply the patch only to freshly regenerated, unpatched runtime sources. It changes

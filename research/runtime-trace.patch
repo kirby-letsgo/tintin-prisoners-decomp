@@ -1,41 +1,53 @@
+diff --git a/generated/tintin/runtime/include/gbrt.h b/generated/tintin/runtime/include/gbrt.h
+index 4c588b9..ed2df7e 100644
+--- a/generated/tintin/runtime/include/gbrt.h
++++ b/generated/tintin/runtime/include/gbrt.h
+@@ -1245,0 +1246 @@ void gbrt_log_ppu_scanline(GBContext* ctx,
++void gbrt_log_actor_write(GBContext* ctx, uint16_t addr, uint8_t value);
 diff --git a/generated/tintin/runtime/src/gbrt.c b/generated/tintin/runtime/src/gbrt.c
-index cb01b84..818fa0d 100644
+index cb01b84..8a0c53c 100644
 --- a/generated/tintin/runtime/src/gbrt.c
 +++ b/generated/tintin/runtime/src/gbrt.c
-@@ -447,7 +447,7 @@ static void gbrt_log_vram_write(GBContext* ctx,
-     }
- 
-     fprintf((FILE*)ctx->ppu_trace_file,
+@@ -450 +450 @@ static void gbrt_log_vram_write(GBContext* ctx,
 -            "[VRAM-WRITE] frame=%llu cyc=%u pc=%04X bank=%u ly=%u mode=%u addr=%04X val=%02X accepted=%u reason=%s\n",
 +            "[VRAM-WRITE] frame=%llu cyc=%u pc=%04X bank=%u ly=%u mode=%u addr=%04X val=%02X accepted=%u reason=%s hl=%04X de=%04X bc=%04X vbk=%u source_bank=%u\n",
-             (unsigned long long)frame_index,
-             ctx->frame_cycles,
-             ctx->pc,
-@@ -457,7 +457,9 @@ static void gbrt_log_vram_write(GBContext* ctx,
-             addr,
-             value,
-             accepted,
+@@ -460 +460,19 @@ static void gbrt_log_vram_write(GBContext* ctx,
 -            reason ? reason : "-");
 +            reason ? reason : "-",
 +            ctx->hl, ctx->de, ctx->bc, ctx->vram_bank,
 +            (unsigned)gb_resolve_rom_bank(ctx, (uint16_t)(ctx->hl - 1)));
- }
- 
- 
-@@ -4407,14 +4409,14 @@ void gbrt_log_ppu_register_write(GBContext* ctx,
-     }
- 
-     fprintf((FILE*)ctx->ppu_trace_file,
++}
++
++void gbrt_log_actor_write(GBContext* ctx, uint16_t addr, uint8_t value) {
++    /* Opt-in actor-descriptor diagnostics; no extra guest reads or writes. */
++    if (ctx->ppu_trace_file &&
++        ((addr >= 0xDE42 && addr < 0xDE72) ||
++         (addr >= 0xC48C && addr <= 0xC49F) || (addr >= 0xDF72 && addr <= 0xDF74) || (addr == 0xFF8F && ctx->pc == 0x3599)) &&
++        gbrt_ppu_trace_enabled_for_frame(ctx, ctx->completed_frames + 1)) {
++        fprintf((FILE*)ctx->ppu_trace_file,
++                "[ANIM-WRITE] frame=%llu pc=%04X bank=%u addr=%04X val=%02X hl=%04X de=%04X bc=%04X sp=%04X wbank=%u source_bank=%u\n",
++                (unsigned long long)(ctx->completed_frames + 1), ctx->pc,
++                (unsigned)gb_resolve_rom_bank(ctx, ctx->pc), addr, value,
++                ctx->hl, ctx->de, ctx->bc, ctx->sp, ctx->wram_bank,
++                (unsigned)gb_resolve_rom_bank(ctx, (uint16_t)(ctx->hl - 1)));
++    }
++
+@@ -2781,0 +2800,2 @@ static void gbrt_write8_impl(GBContext* ctx,
++    if (ctx->ppu_trace_file) gbrt_log_actor_write(ctx, addr, value);
++
+@@ -4410 +4430 @@ void gbrt_log_ppu_register_write(GBContext* ctx,
 -            "[PPU-WRITE] frame=%llu cyc=%u ly=%u mode=%u addr=%04X old=%02X new=%02X\n",
 +            "[PPU-WRITE] frame=%llu cyc=%u ly=%u mode=%u addr=%04X old=%02X new=%02X pc=%04X bank=%u\n",
-             (unsigned long long)frame_index,
-             ctx->frame_cycles,
-             ly,
-             mode,
-             addr,
-             old_value,
+@@ -4417 +4437 @@ void gbrt_log_ppu_register_write(GBContext* ctx,
 -            new_value);
 +            new_value, ctx->pc, (unsigned)gb_resolve_rom_bank(ctx, ctx->pc));
- }
- 
- void gbrt_log_oam_snapshot(GBContext* ctx, const char* reason) {
+diff --git a/generated/tintin/tintin_internal.h b/generated/tintin/tintin_internal.h
+index 44a9ee9..a13f196 100644
+--- a/generated/tintin/tintin_internal.h
++++ b/generated/tintin/tintin_internal.h
+@@ -123,0 +124 @@ static inline void tintin_fast_write8(GBContext* ctx, uint16_t addr, uint8_t val
++            if (ctx->ppu_trace_file) gbrt_log_actor_write(ctx, addr, value);
+@@ -128,0 +130 @@ static inline void tintin_fast_write8(GBContext* ctx, uint16_t addr, uint8_t val
++            if (ctx->ppu_trace_file) gbrt_log_actor_write(ctx, addr, value);
+@@ -133,0 +136 @@ static inline void tintin_fast_write8(GBContext* ctx, uint16_t addr, uint8_t val
++            if (ctx->ppu_trace_file) gbrt_log_actor_write(ctx, addr, value);
