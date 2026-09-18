@@ -7695,4 +7695,3 @@ void func_02_4ca9(GBContext* ctx) {
 void func_02_4cc2(GBContext* ctx) {
     body_02_4ca8(ctx);
 }
-

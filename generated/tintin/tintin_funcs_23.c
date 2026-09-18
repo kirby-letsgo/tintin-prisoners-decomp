@@ -34307,4 +34307,3 @@ pc_52a0:
 void func_07_527d(GBContext* ctx) {
     body_07_527d(ctx);
 }
-

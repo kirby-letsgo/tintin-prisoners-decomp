@@ -35298,4 +35298,3 @@ pc_6a9b:
 void func_0a_6a8c(GBContext* ctx) {
     body_0a_6a8c(ctx);
 }
-

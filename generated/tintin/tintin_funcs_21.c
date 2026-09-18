@@ -11959,4 +11959,3 @@ void func_06_50f8(GBContext* ctx) {
 void func_06_50fd(GBContext* ctx) {
     body_06_50ce(ctx);
 }
-

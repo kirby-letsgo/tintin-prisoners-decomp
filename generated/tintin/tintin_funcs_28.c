@@ -33415,4 +33415,3 @@ pc_405c:
 void func_09_4056(GBContext* ctx) {
     body_09_4056(ctx);
 }
-

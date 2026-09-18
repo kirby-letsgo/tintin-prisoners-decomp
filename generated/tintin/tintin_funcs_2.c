@@ -39439,4 +39439,3 @@ pc_2997:
 void func_2996(GBContext* ctx) {
     body_2996(ctx);
 }
-

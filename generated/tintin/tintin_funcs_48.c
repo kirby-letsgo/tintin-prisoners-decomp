@@ -32890,4 +32890,3 @@ void func_10_44c6(GBContext* ctx) {
 void func_10_44cf(GBContext* ctx) {
     body_10_4421(ctx);
 }
-

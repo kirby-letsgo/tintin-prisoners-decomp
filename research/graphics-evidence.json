@@ -1,0 +1,138 @@
+{
+  "rom_sha256": "4c859ad08f74bcc004f01a69a7d380cdcdea79eb731a09f935337921096e4c20",
+  "frames": "2480-2560",
+  "verified_tile_bytes": 4160,
+  "verified_64_byte_batches": 65,
+  "source_bank_bytes": {
+    "0": 208,
+    "7": 2752,
+    "8": 1200
+  },
+  "quarter_bytes": {
+    "0": 1536,
+    "1": 896,
+    "2": 896,
+    "3": 832
+  },
+  "dma": [
+    {
+      "pc": "FF82",
+      "source": "C000",
+      "count": 65
+    }
+  ],
+  "lcdc": [
+    {
+      "pc": "0DD2",
+      "line": 144,
+      "old": "C9",
+      "new": "C3",
+      "count": 81
+    },
+    {
+      "pc": "13BD",
+      "line": 127,
+      "old": "C3",
+      "new": "C9",
+      "count": 81
+    },
+    {
+      "pc": "4C4E",
+      "line": 144,
+      "old": "C3",
+      "new": "C3",
+      "count": 16
+    },
+    {
+      "pc": "4C4E",
+      "line": 151,
+      "old": "C3",
+      "new": "C3",
+      "count": 65
+    }
+  ],
+  "examples": [
+    {
+      "frame": 2481,
+      "pc": "0F00",
+      "quarter": 0,
+      "destination": "8110",
+      "source_bank": 7,
+      "source_address": "4000",
+      "rom_offset": "01C000"
+    },
+    {
+      "frame": 2481,
+      "pc": "0F03",
+      "quarter": 0,
+      "destination": "8111",
+      "source_bank": 7,
+      "source_address": "4001",
+      "rom_offset": "01C001"
+    },
+    {
+      "frame": 2481,
+      "pc": "0F06",
+      "quarter": 0,
+      "destination": "8112",
+      "source_bank": 7,
+      "source_address": "4002",
+      "rom_offset": "01C002"
+    },
+    {
+      "frame": 2481,
+      "pc": "0F09",
+      "quarter": 0,
+      "destination": "8113",
+      "source_bank": 7,
+      "source_address": "4003",
+      "rom_offset": "01C003"
+    },
+    {
+      "frame": 2481,
+      "pc": "0F0C",
+      "quarter": 0,
+      "destination": "8114",
+      "source_bank": 7,
+      "source_address": "4004",
+      "rom_offset": "01C004"
+    },
+    {
+      "frame": 2481,
+      "pc": "0F0F",
+      "quarter": 0,
+      "destination": "8115",
+      "source_bank": 7,
+      "source_address": "4005",
+      "rom_offset": "01C005"
+    },
+    {
+      "frame": 2481,
+      "pc": "0F12",
+      "quarter": 0,
+      "destination": "8116",
+      "source_bank": 7,
+      "source_address": "4006",
+      "rom_offset": "01C006"
+    },
+    {
+      "frame": 2481,
+      "pc": "0F15",
+      "quarter": 0,
+      "destination": "8117",
+      "source_bank": 7,
+      "source_address": "4007",
+      "rom_offset": "01C007"
+    },
+    {
+      "frame": 2514,
+      "pc": "100D",
+      "quarter": 1,
+      "destination": "8150",
+      "source_bank": 8,
+      "source_address": "4370",
+      "rom_offset": "020370"
+    }
+  ],
+  "limitations": "Opening route only. Byte matches verify uploads, not the full animation state machine. Trace logging is diagnostic, not replacement logic."
+}

@@ -40133,4 +40133,3 @@ void func_08_7cb3(GBContext* ctx) {
 void func_08_7cb6(GBContext* ctx) {
     body_08_527f(ctx);
 }
-

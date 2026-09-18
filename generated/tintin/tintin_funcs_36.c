@@ -34926,4 +34926,3 @@ pc_6740:
 void func_0b_673e(GBContext* ctx) {
     body_0b_673e(ctx);
 }
-

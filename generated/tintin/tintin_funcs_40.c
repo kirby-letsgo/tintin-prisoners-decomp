@@ -14552,4 +14552,3 @@ void func_0c_7fe6(GBContext* ctx) {
 void func_0c_7fe8(GBContext* ctx) {
     body_0c_7c6f(ctx);
 }
-

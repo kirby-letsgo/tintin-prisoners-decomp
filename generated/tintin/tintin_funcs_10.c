@@ -35749,4 +35749,3 @@ pc_5686:
 void func_03_565f(GBContext* ctx) {
     body_03_565f(ctx);
 }
-

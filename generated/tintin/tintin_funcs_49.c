@@ -34514,4 +34514,3 @@ void func_10_5454(GBContext* ctx) {
 void func_10_547a(GBContext* ctx) {
     body_10_5400(ctx);
 }
-

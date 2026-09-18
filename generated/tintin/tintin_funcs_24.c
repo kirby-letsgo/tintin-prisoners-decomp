@@ -35750,4 +35750,3 @@ void func_07_73fc(GBContext* ctx) {
 void func_07_73ff(GBContext* ctx) {
     body_07_73fc(ctx);
 }
-

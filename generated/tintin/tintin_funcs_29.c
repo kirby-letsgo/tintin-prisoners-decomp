@@ -30640,4 +30640,3 @@ void func_09_4e9d(GBContext* ctx) {
 void func_09_4ea4(GBContext* ctx) {
     body_09_46b9(ctx);
 }
-

@@ -101,4 +101,3 @@ void func_14af(GBContext* ctx) {
 void func_14b0(GBContext* ctx) {
     body_0000(ctx);
 }
-

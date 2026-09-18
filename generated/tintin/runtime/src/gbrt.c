@@ -447,7 +447,7 @@ static void gbrt_log_vram_write(GBContext* ctx,
     }
 
     fprintf((FILE*)ctx->ppu_trace_file,
-            "[VRAM-WRITE] frame=%llu cyc=%u pc=%04X bank=%u ly=%u mode=%u addr=%04X val=%02X accepted=%u reason=%s\n",
+            "[VRAM-WRITE] frame=%llu cyc=%u pc=%04X bank=%u ly=%u mode=%u addr=%04X val=%02X accepted=%u reason=%s hl=%04X de=%04X bc=%04X vbk=%u source_bank=%u\n",
             (unsigned long long)frame_index,
             ctx->frame_cycles,
             ctx->pc,
@@ -457,7 +457,9 @@ static void gbrt_log_vram_write(GBContext* ctx,
             addr,
             value,
             accepted,
-            reason ? reason : "-");
+            reason ? reason : "-",
+            ctx->hl, ctx->de, ctx->bc, ctx->vram_bank,
+            (unsigned)gb_resolve_rom_bank(ctx, (uint16_t)(ctx->hl - 1)));
 }
 
 
@@ -4407,14 +4409,14 @@ void gbrt_log_ppu_register_write(GBContext* ctx,
     }
 
     fprintf((FILE*)ctx->ppu_trace_file,
-            "[PPU-WRITE] frame=%llu cyc=%u ly=%u mode=%u addr=%04X old=%02X new=%02X\n",
+            "[PPU-WRITE] frame=%llu cyc=%u ly=%u mode=%u addr=%04X old=%02X new=%02X pc=%04X bank=%u\n",
             (unsigned long long)frame_index,
             ctx->frame_cycles,
             ly,
             mode,
             addr,
             old_value,
-            new_value);
+            new_value, ctx->pc, (unsigned)gb_resolve_rom_bank(ctx, ctx->pc));
 }
 
 void gbrt_log_oam_snapshot(GBContext* ctx, const char* reason) {

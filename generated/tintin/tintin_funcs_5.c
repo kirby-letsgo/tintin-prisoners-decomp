@@ -34469,4 +34469,3 @@ void func_01_6d28(GBContext* ctx) {
 void func_01_6d43(GBContext* ctx) {
     body_01_6cc7(ctx);
 }
-

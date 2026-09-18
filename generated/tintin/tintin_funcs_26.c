@@ -15838,4 +15838,3 @@ loc_08_501e:
 void func_08_5011(GBContext* ctx) {
     body_08_5011(ctx);
 }
-

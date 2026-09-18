@@ -35353,4 +35353,3 @@ void func_10_6b34(GBContext* ctx) {
 void func_10_6b47(GBContext* ctx) {
     body_10_6adc(ctx);
 }
-

@@ -143,10 +143,20 @@ export default function App() {
               </button>
             </div>
             <div className="flex gap-3">
-              <button className="secondary flex-1" disabled={state.busy}
-                onClick={() => void game?.transferSave(false)}>Export save</button>
-              <button className="secondary flex-1" disabled={state.busy}
-                onClick={() => void game?.transferSave(true)}>Import save</button>
+              <button
+                className="secondary flex-1"
+                disabled={state.busy}
+                onClick={() => void game?.transferSave(false)}
+              >
+                Export save
+              </button>
+              <button
+                className="secondary flex-1"
+                disabled={state.busy}
+                onClick={() => void game?.transferSave(true)}
+              >
+                Import save
+              </button>
             </div>
             <button
               className="secondary w-full"

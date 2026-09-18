@@ -28942,4 +28942,3 @@ void func_0a_54ea(GBContext* ctx) {
 void func_0a_54ec(GBContext* ctx) {
     body_0a_54ea(ctx);
 }
-

@@ -32854,4 +32854,3 @@ void func_05_77cd(GBContext* ctx) {
 void func_05_77de(GBContext* ctx) {
     body_05_7764(ctx);
 }
-

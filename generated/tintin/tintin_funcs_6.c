@@ -34731,4 +34731,3 @@ void func_02_4946(GBContext* ctx) {
 void func_02_494c(GBContext* ctx) {
     body_02_4929(ctx);
 }
-

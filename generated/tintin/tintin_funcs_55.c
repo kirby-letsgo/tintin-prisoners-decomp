@@ -31005,4 +31005,3 @@ void func_12_430b(GBContext* ctx) {
 void func_12_430e(GBContext* ctx) {
     body_12_4301(ctx);
 }
-

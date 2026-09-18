@@ -33562,4 +33562,3 @@ void func_04_4dc2(GBContext* ctx) {
 void func_04_4dcd(GBContext* ctx) {
     body_04_4da5(ctx);
 }
-

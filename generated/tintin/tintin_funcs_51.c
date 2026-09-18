@@ -22050,4 +22050,3 @@ void func_10_7dd7(GBContext* ctx) {
 void func_10_7dd8(GBContext* ctx) {
     body_10_7d9f(ctx);
 }
-

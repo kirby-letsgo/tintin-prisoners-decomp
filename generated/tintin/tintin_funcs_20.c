@@ -58919,4 +58919,3 @@ void func_06_7705(GBContext* ctx) {
 void func_06_787f(GBContext* ctx) {
     body_06_4000(ctx);
 }
-

@@ -10202,4 +10202,3 @@ void func_13_6602(GBContext* ctx) {
 void func_13_6611(GBContext* ctx) {
     body_13_65a4(ctx);
 }
-
