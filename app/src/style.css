@@ -1,0 +1,91 @@
+@import "tailwindcss";
+@theme {
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+@layer base {
+    html,
+    body,
+    #app {
+        @apply m-0 min-h-full bg-zinc-950 font-sans;
+    }
+    button {
+        @apply cursor-pointer disabled:cursor-default disabled:opacity-40;
+        -webkit-tap-highlight-color: transparent;
+    }
+    button:focus-visible,
+    canvas:focus-visible {
+        outline: 2px solid #a1a1aa;
+        outline-offset: 3px;
+    }
+    kbd {
+        @apply inline-flex min-w-7 items-center justify-center rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-xs text-zinc-200;
+    }
+}
+@layer components {
+    .primary {
+        @apply min-h-11 rounded-lg bg-zinc-100 px-4 py-3 text-sm font-medium text-zinc-950 transition hover:bg-white;
+    }
+    .secondary {
+        @apply min-h-11 rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-zinc-200 transition hover:bg-zinc-800;
+    }
+    .game-screen {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+        outline: none !important;
+    }
+    .mobile-controls {
+        display: none;
+    }
+    .touch-button {
+        @apply select-none rounded-full border border-white/20 bg-black/40 text-sm text-white/80;
+        touch-action: none;
+        -webkit-user-select: none;
+    }
+    .touch-button.pressed {
+        @apply bg-white/40 text-white;
+    }
+}
+@media (pointer: coarse) {
+    .mobile-controls {
+        display: flex;
+        position: absolute;
+        bottom: max(20px, env(safe-area-inset-bottom));
+        left: 16px;
+        right: 16px;
+        justify-content: space-between;
+        gap: 8px;
+        align-items: center;
+    }
+    .dpad {
+        display: grid;
+        grid-template: repeat(3, 32px) / repeat(3, 32px);
+    }
+    .dpad button {
+        width: 32px;
+        height: 32px;
+    }
+    .up {
+        grid-area: 1/2;
+    }
+    .left {
+        grid-area: 2/1;
+    }
+    .right {
+        grid-area: 2/3;
+    }
+    .down {
+        grid-area: 3/2;
+    }
+    .action {
+        width: 44px;
+        height: 44px;
+    }
+    .system {
+        font-size: 8px;
+        padding: 8px;
+        min-height: 30px;
+    }
+}

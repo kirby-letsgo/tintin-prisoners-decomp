@@ -1,1 +1,15 @@
 rom
+/.tools/
+/generated/
+/build/
+/logs/
+__pycache__/
+.DS_Store
+/app/node_modules/
+/app/dist/
+/app/src-tauri/target/
+/app/src-tauri/gen/android/.gradle/
+/app/src-tauri/gen/android/**/build/
+/app/src-tauri/gen/android/local.properties
+/imgui.ini
+/app/src-tauri/gen/schemas/

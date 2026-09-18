@@ -1,0 +1,23 @@
+[package]
+name = "tintin-player"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "tintin_player_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+cc = { version = "1", features = ["parallel"] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+sha2 = "0.10"
+
+[profile.release]
+strip = true
+opt-level = "s"
+lto = "thin"
