@@ -51,3 +51,9 @@ The `app/` directory contains a Tauri app using React, TypeScript, and Tailwind.
 It asks for the ROM, remembers it, embeds the game, and supports save states.
 Run `make app-install app-dev` after generating the C core. See
 [app/README.md](app/README.md) for macOS/Android builds and controls.
+
+## CI app packages
+
+GitHub Actions builds optimized macOS and Android packages without a ROM. See
+[release builds](docs/releases.md) and [source bundle](app/core/README.md).
+The app has checksummed saves, previous-generation backups, and pause-menu export/import.

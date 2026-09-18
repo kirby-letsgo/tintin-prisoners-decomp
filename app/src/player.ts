@@ -275,9 +275,9 @@ export class Player {
     await this.pause();
     this.update({ busy: true });
     try {
-      await invoke("restore_game");
+      const warning = await invoke<string>("restore_game");
       this.clearAudio();
-      this.update({ busy: false, message: "", error: false });
+      this.update({ busy: false, message: warning, error: false });
       if (wasPlaying) await this.resume();
     } catch (error) {
       this.update({ busy: false, message: String(error), error: true });

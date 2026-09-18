@@ -159,17 +159,27 @@ fn save_game(app: tauri::AppHandle, automatic: bool) -> Result<(), String> {
     save_to(&data_dir(&app)?.join("quick.state"))
 }
 #[tauri::command]
-fn restore_game(app: tauri::AppHandle) -> Result<(), String> {
+fn restore_game(app: tauri::AppHandle) -> Result<String, String> {
     let loaded = CORE.lock().map_err(|_| "Game state unavailable")?;
     if !*loaded {
         return Err("Open a ROM first.".into());
     }
-    let path = data_dir(&app)?.join("quick.state");
-    if !path.is_file() {
-        return Err("No manual save yet. Choose Save state from the menu first.".into());
-    }
-    restore_from(&path)
+    restore_manual(&data_dir(&app)?)
 }
+fn restore_manual(dir: &Path) -> Result<String, String> {
+    let path = dir.join("quick.state");
+    for candidate in [&path, &saves::backup(&path)] {
+        if candidate.is_file() && restore_from(candidate).is_ok() {
+            return Ok(if candidate == &path {
+                String::new()
+            } else {
+                "Recovered the previous manual save.".into()
+            });
+        }
+    }
+    Err("No valid manual save is available. Current progress is unchanged.".into())
+}
+
 #[tauri::command]
 fn export_save(app: tauri::AppHandle) -> Result<Response, String> {
     let loaded = CORE.lock().map_err(|_| "Game state unavailable")?;

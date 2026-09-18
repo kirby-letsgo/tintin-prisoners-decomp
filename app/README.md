@@ -6,8 +6,9 @@ small touch controls. Esc opens the in-game menu.
 
 ## Run
 
-From the repository root, generate the C source once (`make bootstrap generate`).
-The generator must remain at the revision pinned in `tools/project.py`.
+From the repository root, prepare the checked-in C bundle with
+`python3 tools/core_bundle.py unpack`. Regeneration from your ROM remains available
+via `make bootstrap generate`, using the pinned generator.
 Then:
 
 ```sh
@@ -16,24 +17,8 @@ npm ci
 npm run tauri -- dev
 ```
 
-Build the macOS application:
-
-```sh
-npm run tauri -- build
-```
-
-The `.app` is written to `src-tauri/target/release/bundle/macos/`.
-
-For Android, configure `JAVA_HOME`, `ANDROID_HOME`, and `NDK_HOME` for JDK 17 and
-your installed Android SDK/NDK. Initialize once, then build:
-
-```sh
-npm run tauri -- android init
-npm run tauri -- android build --debug --target aarch64 --apk
-```
-
-The APK is under `src-tauri/gen/android/app/build/outputs/apk/`.
-Debug APKs are for local testing; release distribution requires Android signing.
+Release builds run in GitHub Actions. See [release instructions](../docs/releases.md)
+for artifacts, signing, and repeatable build commands.
 
 ## Controls
 
@@ -68,16 +53,25 @@ macOS), partitioned by the ROM SHA-256. It contains:
 - `last-rom.gbc`: imported ROM cache.
 - `auto.state`: exit/background/periodic autosave.
 - `quick.state`: manual checkpoint, independent of autosaves.
+- `auto.backup.state` / `quick.backup.state`: the previous valid generation.
 
-States are written to a temporary file, synchronized, then atomically renamed.
+Checksummed states are written to a temporary file, synchronized, then atomically
+renamed. The previous valid generation is retained. Pending files are never
+restored; startup falls back to a valid backup when needed.
 The newest compatible manual or automatic state is restored on opening a ROM.
-A rejected state is preserved with an `incompatible-*` suffix and a visible message.
+A rejected state is preserved with a `rejected-*` suffix and a visible message.
 A failed exit save prevents desktop close and shows the error.
 
 Autosave runs on desktop close/quit, Android suspension, WebView backgrounding,
 and every 30 seconds during play. Force-killing a process cannot guarantee a
 final save. Upstream save-state formats are runtime-version-specific; macOS to
 Android save portability has not been established.
+
+Export/import are in the pause menu. Exports use `.tintinsave` with ROM/runtime
+identity and SHA-256 integrity checks. Import validation uses a separate native
+context before altering current progress; current progress is autosaved first.
+Old local raw states migrate automatically. Keep exported saves outside app data
+before uninstalling the app.
 
 ## Architecture and tests
 

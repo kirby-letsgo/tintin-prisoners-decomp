@@ -132,6 +132,15 @@ mod integration_tests {
         );
         assert_eq!(std::fs::read(dir.join("quick.state")).unwrap(), quick);
         assert_eq!(std::fs::read(dir.join("auto.state")).unwrap(), auto);
+        save_to(&dir.join("quick.state")).unwrap();
+        std::fs::write(dir.join("quick.state"), b"interrupted write").unwrap();
+        assert!(restore_manual(&dir).unwrap().contains("previous"));
+        let n = unsafe { tt_tick(0, packet.as_mut_ptr(), packet.len()) };
+        assert_eq!(
+            expected,
+            packet[..n],
+            "Backup must restore the previous manual checkpoint"
+        );
         std::fs::remove_dir_all(&dir).unwrap();
         let invalid = root.join("logs/app-test-invalid.state");
         std::fs::write(&invalid, b"invalid").unwrap();
