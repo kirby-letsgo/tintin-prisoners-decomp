@@ -33,7 +33,12 @@ fn main() {
         .file(adapter)
         .file("native/bridge.c")
         .std("c11")
-        .opt_level(1)
+        .opt_level_str(if env::var("PROFILE").as_deref() == Ok("release") {
+            "s"
+        } else {
+            "1"
+        })
+        .debug(false)
         .warnings(false);
     for name in [
         "gbrt",

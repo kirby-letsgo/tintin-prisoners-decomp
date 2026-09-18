@@ -105,6 +105,34 @@ mod integration_tests {
             packet[..n],
             "Restoring should reproduce video and audio exactly"
         );
+        let dir = root.join("logs/import-test");
+        std::fs::create_dir_all(&dir).unwrap();
+        let exported = capture(&dir).unwrap();
+        let n = unsafe { tt_tick(0, packet.as_mut_ptr(), packet.len()) };
+        let expected = packet[..n].to_vec();
+        import_bytes(&dir, &exported).unwrap();
+        let n = unsafe { tt_tick(0, packet.as_mut_ptr(), packet.len()) };
+        assert_eq!(
+            expected,
+            packet[..n],
+            "Export/import must reproduce the next frame and audio"
+        );
+        let before = capture(&dir).unwrap();
+        let quick = std::fs::read(dir.join("quick.state")).unwrap();
+        let auto = std::fs::read(dir.join("auto.state")).unwrap();
+        let mut damaged = exported.clone();
+        *damaged.last_mut().unwrap() ^= 1;
+        assert!(import_bytes(&dir, &damaged).is_err());
+        let incompatible = saves::encode(b"GBSVtruncated runtime state").unwrap();
+        assert!(import_bytes(&dir, &incompatible).is_err());
+        assert_eq!(
+            capture(&dir).unwrap(),
+            before,
+            "Rejected import must not alter live state"
+        );
+        assert_eq!(std::fs::read(dir.join("quick.state")).unwrap(), quick);
+        assert_eq!(std::fs::read(dir.join("auto.state")).unwrap(), auto);
+        std::fs::remove_dir_all(&dir).unwrap();
         let invalid = root.join("logs/app-test-invalid.state");
         std::fs::write(&invalid, b"invalid").unwrap();
         assert!(restore_from(&invalid).is_err());

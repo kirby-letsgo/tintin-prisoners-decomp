@@ -1,4 +1,5 @@
-rom
+rom/*
+!rom/.gitkeep
 /.tools/
 /generated/
 /build/
@@ -13,3 +14,6 @@ __pycache__/
 /app/src-tauri/gen/android/local.properties
 /imgui.ini
 /app/src-tauri/gen/schemas/
+/artifacts/
+*.jks
+*.keystore

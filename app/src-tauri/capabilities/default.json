@@ -1,1 +1,15 @@
-{"identifier":"main","description":"Main game window; read only files selected using the system picker.","windows":["main"],"permissions":["core:default","dialog:allow-open","fs:allow-read-file","fs:allow-stat"]}
+{
+  "identifier": "main",
+  "description": "Game window; access files selected using the system picker.",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "dialog:allow-open",
+    "fs:allow-read-file",
+    "fs:allow-stat",
+    "dialog:allow-save",
+    "fs:allow-write-file"
+  ]
+}

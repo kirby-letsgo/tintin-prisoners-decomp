@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
-import { open } from "@tauri-apps/plugin-dialog";
-import { readFile, stat } from "@tauri-apps/plugin-fs";
+import { open, save as saveDialog } from "@tauri-apps/plugin-dialog";
+import { readFile, writeFile, stat } from "@tauri-apps/plugin-fs";
 
 export type PlayerState = {
   loaded: boolean;
@@ -281,6 +281,35 @@ export class Player {
       if (wasPlaying) await this.resume();
     } catch (error) {
       this.update({ busy: false, message: String(error), error: true });
+    }
+  }
+  async transferSave(importing: boolean) {
+    if (!this.state.loaded || this.state.busy) return;
+    await this.pause();
+    this.update({ busy: true, message: "", error: false });
+    try {
+      const filters = [{ name: "Tintin save", extensions: ["tintinsave"] }];
+      if (importing) {
+        const path = await open({ multiple: false, directory: false, filters });
+        if (!path) return;
+        if ((await stat(path)).size > 1024 * 1024)
+          throw new Error("This save file is too large.");
+        await invoke("import_save", await readFile(path));
+        this.message("Save imported. Choose Continue to play.");
+      } else {
+        const path = await saveDialog({
+          defaultPath: "tintin.tintinsave",
+          filters,
+        });
+        if (!path) return;
+        const result = await invoke<ArrayBuffer | number[]>("export_save");
+        await writeFile(path, new Uint8Array(result));
+        this.message("Save exported.");
+      }
+    } catch (error) {
+      this.message(String(error), true);
+    } finally {
+      this.update({ busy: false });
     }
   }
   reportError(message: string) {

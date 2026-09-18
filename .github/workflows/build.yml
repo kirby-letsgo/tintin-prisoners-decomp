@@ -1,0 +1,87 @@
+name: Build apps
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  CARGO_BUILD_JOBS: 3
+  CARGO_TERM_COLOR: always
+jobs:
+  macos:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - name: Install pinned Rust
+        run: rustup toolchain install 1.95.0 --profile minimal && rustup default 1.95.0
+      - run: python3 tools/core_bundle.py unpack
+      - run: npm ci --prefix app
+      - name: Check frontend and save recovery
+        run: |
+          npm run build --prefix app
+          cargo test --locked --manifest-path app/src-tauri/Cargo.toml
+      - name: Build optimized macOS app
+        env:
+          APPLE_SIGNING_IDENTITY: '-'
+        run: npm --prefix app run tauri -- build --ci --bundles app -- --locked
+      - name: Package app
+        run: |
+          mkdir -p artifacts
+          ditto -c -k --sequesterRsrc --keepParent 'app/src-tauri/target/release/bundle/macos/Tintin Player.app' artifacts/Tintin-Player-macOS-arm64.zip
+          python3 tools/artifact_manifest.py artifacts
+      - uses: actions/upload-artifact@v6
+        with:
+          name: Tintin-Player-macOS-arm64
+          path: artifacts/*
+          if-no-files-found: error
+          compression-level: 0
+  android:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install pinned Rust and Android SDK
+        run: |
+          rustup toolchain install 1.95.0 --profile minimal --target aarch64-linux-android
+          rustup default 1.95.0
+          sdkmanager 'platforms;android-36' 'build-tools;36.0.0' 'ndk;27.1.12297006'
+          echo "NDK_HOME=$ANDROID_HOME/ndk/27.1.12297006" >> "$GITHUB_ENV"
+      - run: python3 tools/core_bundle.py unpack
+      - run: npm ci --prefix app
+      - name: Build optimized ARM64 APK
+        run: npm --prefix app run tauri -- android build --ci --target aarch64 --apk
+      - name: Sign APK
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: python3 tools/sign_android.py
+      - run: python3 tools/artifact_manifest.py artifacts
+      - uses: actions/upload-artifact@v6
+        with:
+          name: Tintin-Player-Android-arm64
+          path: artifacts/*
+          if-no-files-found: error
+          compression-level: 0
