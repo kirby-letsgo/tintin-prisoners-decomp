@@ -17272,6 +17272,7 @@ loc_0d18:
     /* 0d18 */     gbrt_timed_jump(ctx, 0x0f30, 16); return;
     if (ctx->single_step_mode) return;
 loc_0ee0:
+    /* Named: tintin_upload_actor_tiles_0_to_3 - Upload four tile descriptors from DE42 into actor slot + 00. Tail continuation: saved VRAM-bank AF must already be on the guest stack. */
     /* LD A,($c48c) */
     /* 0ee0 */     gb_tick(ctx, 15);
     ctx->a = gb_read8(ctx, GB_WRAM0_BASE + 0x048c);
@@ -19135,6 +19136,7 @@ pc_0fec:
     return;
     if (ctx->single_step_mode) return;
 loc_0fed:
+    /* Named: tintin_upload_actor_tiles_4_to_7 - Upload four tile descriptors from DE4E into actor slot + 40. Tail continuation; entered through the upload dispatcher. */
     /* LD A,($c48c) */
     /* 0fed */     gb_tick(ctx, 15);
     ctx->a = gb_read8(ctx, GB_WRAM0_BASE + 0x048c);
@@ -21011,6 +21013,7 @@ loc_10f9:
     return;
     if (ctx->single_step_mode) return;
 loc_10fa:
+    /* Named: tintin_upload_actor_tiles_8_to_11 - Upload four tile descriptors from DE5A into actor slot + 80. Tail continuation; entered through the upload dispatcher. */
     /* LD A,($c48c) */
     /* 10fa */     gb_tick(ctx, 15);
     ctx->a = gb_read8(ctx, GB_WRAM0_BASE + 0x048c);
@@ -22916,6 +22919,7 @@ loc_1206:
     return;
     if (ctx->single_step_mode) return;
 loc_1207:
+    /* Named: tintin_upload_actor_tiles_12_to_15 - Upload four tile descriptors from DE66 into actor slot + C0. Tail continuation; entered through the upload dispatcher. */
     /* LD A,($c48c) */
     /* 1207 */     gb_tick(ctx, 15);
     ctx->a = gb_read8(ctx, GB_WRAM0_BASE + 0x048c);
@@ -24779,6 +24783,7 @@ loc_1313:
     return;
     if (ctx->single_step_mode) return;
 loc_1314:
+    /* Named: tintin_upload_actor_tile_quarter - Save VRAM bank, select bank 1, dispatch one four-tile batch by DF72 & 7F. See research/graphics.md and graphics_reference.c. */
     /* LDH A,($FF00+$fc) */
     /* 1314 */     gb_tick(ctx, 11);
     ctx->a = gb_read8(ctx, GB_HRAM_BASE + 0x7c);
@@ -24876,7 +24881,7 @@ loc_1323:
         gbrt_timed_jump(ctx, 0x1207, 16);
         if (gbrt_generated_safepoint(ctx)) return;
         if (ctx->single_step_mode) return;
-        if (gb_resolve_rom_bank(ctx, 0x1207) == 0) func_1207(ctx);
+        if (gb_resolve_rom_bank(ctx, 0x1207) == 0) tintin_upload_actor_tiles_12_to_15(ctx);
         return;
     } /* Z */
     gbrt_timed_jump(ctx, 0x1326, 12);
@@ -24911,7 +24916,7 @@ loc_1327:
         gbrt_timed_jump(ctx, 0xee0, 16);
         if (gbrt_generated_safepoint(ctx)) return;
         if (ctx->single_step_mode) return;
-        if (gb_resolve_rom_bank(ctx, 0x0ee0) == 0) func_0ee0(ctx);
+        if (gb_resolve_rom_bank(ctx, 0x0ee0) == 0) tintin_upload_actor_tiles_0_to_3(ctx);
         return;
     } /* Z */
     gbrt_timed_jump(ctx, 0x132a, 12);
@@ -24948,7 +24953,7 @@ loc_132b:
         gbrt_timed_jump(ctx, 0xfed, 16);
         if (gbrt_generated_safepoint(ctx)) return;
         if (ctx->single_step_mode) return;
-        if (gb_resolve_rom_bank(ctx, 0x0fed) == 0) func_0fed(ctx);
+        if (gb_resolve_rom_bank(ctx, 0x0fed) == 0) tintin_upload_actor_tiles_4_to_7(ctx);
         return;
     } /* Z */
     gbrt_timed_jump(ctx, 0x132e, 12);
@@ -24967,7 +24972,7 @@ loc_132e:
     /* 132e */     gbrt_timed_jump(ctx, 0x10fa, 16);
     if (gbrt_generated_safepoint(ctx)) return;
     if (ctx->single_step_mode) return;
-    if (gb_resolve_rom_bank(ctx, 0x10fa) == 0) func_10fa(ctx);
+    if (gb_resolve_rom_bank(ctx, 0x10fa) == 0) tintin_upload_actor_tiles_8_to_11(ctx);
     return;
     if (ctx->single_step_mode) return;
 }
@@ -24984,7 +24989,7 @@ void func_0d18(GBContext* ctx) {
     body_0d13(ctx);
 }
 
-void func_0ee0(GBContext* ctx) {
+void tintin_upload_actor_tiles_0_to_3(GBContext* ctx) {
     body_0d13(ctx);
 }
 
@@ -25324,7 +25329,7 @@ void func_0fea(GBContext* ctx) {
     body_0d13(ctx);
 }
 
-void func_0fed(GBContext* ctx) {
+void tintin_upload_actor_tiles_4_to_7(GBContext* ctx) {
     body_0d13(ctx);
 }
 
@@ -25624,7 +25629,7 @@ void func_10f9(GBContext* ctx) {
     body_0d13(ctx);
 }
 
-void func_10fa(GBContext* ctx) {
+void tintin_upload_actor_tiles_8_to_11(GBContext* ctx) {
     body_0d13(ctx);
 }
 
@@ -25936,7 +25941,7 @@ void func_1206(GBContext* ctx) {
     body_0d13(ctx);
 }
 
-void func_1207(GBContext* ctx) {
+void tintin_upload_actor_tiles_12_to_15(GBContext* ctx) {
     body_0d13(ctx);
 }
 
@@ -26228,7 +26233,7 @@ void func_1313(GBContext* ctx) {
     body_0d13(ctx);
 }
 
-void func_1314(GBContext* ctx) {
+void tintin_upload_actor_tile_quarter(GBContext* ctx) {
     body_0d13(ctx);
 }
 
@@ -26959,7 +26964,7 @@ pc_0ebd:
     /* 0ebd */     gbrt_timed_call(ctx, 0x1314, 0xec0);
     if (gbrt_generated_safepoint(ctx)) return;
     if (ctx->single_step_mode) return;
-    if (gb_resolve_rom_bank(ctx, 0x1314) == 0) func_1314(ctx);
+    if (gb_resolve_rom_bank(ctx, 0x1314) == 0) tintin_upload_actor_tile_quarter(ctx);
     return;
     if (ctx->single_step_mode) return;
     goto loc_0ec0; /* fallthrough */
@@ -26979,7 +26984,7 @@ loc_0ebb:
     /* 0ebd */     gbrt_timed_call(ctx, 0x1314, 0xec0);
     if (gbrt_generated_safepoint(ctx)) return;
     if (ctx->single_step_mode) return;
-    if (gb_resolve_rom_bank(ctx, 0x1314) == 0) func_1314(ctx);
+    if (gb_resolve_rom_bank(ctx, 0x1314) == 0) tintin_upload_actor_tile_quarter(ctx);
     return;
     if (ctx->single_step_mode) return;
     goto loc_0ec0; /* fallthrough */

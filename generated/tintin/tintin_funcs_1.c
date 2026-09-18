@@ -11649,7 +11649,7 @@ loc_015f:
     /* 015f */     gbrt_timed_call(ctx, 0x1314, 0x162);
     if (gbrt_generated_safepoint(ctx)) return;
     if (ctx->single_step_mode) return;
-    if (gb_resolve_rom_bank(ctx, 0x1314) == 0) func_1314(ctx);
+    if (gb_resolve_rom_bank(ctx, 0x1314) == 0) tintin_upload_actor_tile_quarter(ctx);
     return;
     if (ctx->single_step_mode) return;
     goto loc_0162; /* fallthrough */
@@ -37903,7 +37903,7 @@ loc_1902:
     /* 1902 */     gbrt_timed_call(ctx, 0x1314, 0x1905);
     if (gbrt_generated_safepoint(ctx)) return;
     if (ctx->single_step_mode) return;
-    if (gb_resolve_rom_bank(ctx, 0x1314) == 0) func_1314(ctx);
+    if (gb_resolve_rom_bank(ctx, 0x1314) == 0) tintin_upload_actor_tile_quarter(ctx);
     return;
     if (ctx->single_step_mode) return;
     goto loc_1905; /* fallthrough */

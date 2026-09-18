@@ -1541,7 +1541,7 @@ void tintin_dispatch_12(GBContext* ctx, uint16_t addr, uint16_t bank) {
             break;
         case 0x1207:
             switch (bank) {
-                case 0: func_1207(ctx); break;
+                case 0: tintin_upload_actor_tiles_12_to_15(ctx); break;
                 default: gbrt_execute_dispatch_fallback(ctx, bank, addr, GB_DISPATCH_FALLBACK_BANK_NOT_COMPILED, 1); break;
             }
             break;
@@ -3101,7 +3101,7 @@ void tintin_dispatch_13(GBContext* ctx, uint16_t addr, uint16_t bank) {
             break;
         case 0x1314:
             switch (bank) {
-                case 0: func_1314(ctx); break;
+                case 0: tintin_upload_actor_tile_quarter(ctx); break;
                 default: gbrt_execute_dispatch_fallback(ctx, bank, addr, GB_DISPATCH_FALLBACK_BANK_NOT_COMPILED, 1); break;
             }
             break;

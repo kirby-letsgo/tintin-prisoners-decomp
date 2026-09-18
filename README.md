@@ -33,7 +33,7 @@ annotations, and future native replacements separately in version-controlled fil
   embedded ROM array and large analysis report remain ignored.
 - `build/tintin/tintin`: native executable (ignored).
 - `logs/`: build logs, captures, state dumps, and local saves (ignored).
-- `docs/`: findings and validation notes.
+- `research/`: reviewed routine names, readable references and replay evidence.
 
 The ROM is 1 MiB, 64 banks, CGB-only, MBC5 without cartridge RAM, revision 0.
 Its SHA-256 is `4c859ad08f74bcc004f01a69a7d380cdcdea79eb731a09f935337921096e4c20`.
@@ -64,3 +64,9 @@ assembled character references, palettes and source-location candidates. Start w
 [the sprite workflow](assets/README.md) and [observations](assets/observations.md).
 Sprite PNGs, palettes, reference sheets and their manifest are tracked in
 `assets/extracted/`. Only raw capture intermediates remain ignored.
+
+## Reading the game code
+
+Start with [the code guide](research/README.md) and the verified
+[actor tile-upload path](research/graphics.md). The named generated entry points
+keep original timing; the readable C reference explains the same data flow.

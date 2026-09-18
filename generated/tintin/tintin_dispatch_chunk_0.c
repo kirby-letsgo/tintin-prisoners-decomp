@@ -21299,7 +21299,7 @@ void tintin_dispatch_0e(GBContext* ctx, uint16_t addr, uint16_t bank) {
             break;
         case 0x0ee0:
             switch (bank) {
-                case 0: func_0ee0(ctx); break;
+                case 0: tintin_upload_actor_tiles_0_to_3(ctx); break;
                 default: gbrt_execute_dispatch_fallback(ctx, bank, addr, GB_DISPATCH_FALLBACK_BANK_NOT_COMPILED, 1); break;
             }
             break;
@@ -22865,7 +22865,7 @@ void tintin_dispatch_0f(GBContext* ctx, uint16_t addr, uint16_t bank) {
             break;
         case 0x0fed:
             switch (bank) {
-                case 0: func_0fed(ctx); break;
+                case 0: tintin_upload_actor_tiles_4_to_7(ctx); break;
                 default: gbrt_execute_dispatch_fallback(ctx, bank, addr, GB_DISPATCH_FALLBACK_BANK_NOT_COMPILED, 1); break;
             }
             break;
@@ -24431,7 +24431,7 @@ void tintin_dispatch_10(GBContext* ctx, uint16_t addr, uint16_t bank) {
             break;
         case 0x10fa:
             switch (bank) {
-                case 0: func_10fa(ctx); break;
+                case 0: tintin_upload_actor_tiles_8_to_11(ctx); break;
                 default: gbrt_execute_dispatch_fallback(ctx, bank, addr, GB_DISPATCH_FALLBACK_BANK_NOT_COMPILED, 1); break;
             }
             break;
