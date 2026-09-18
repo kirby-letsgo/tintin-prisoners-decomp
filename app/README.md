@@ -6,8 +6,8 @@ small touch controls. Esc opens the in-game menu.
 
 ## Run
 
-From the repository root, prepare the checked-in C bundle with
-`python3 tools/core_bundle.py unpack`. Regeneration from your ROM remains available
+The generated C is checked in. From the repository root, verify it with
+`python3 tools/core_sources.py verify`. Regeneration from your ROM remains available
 via `make bootstrap generate`, using the pinned generator.
 Then:
 

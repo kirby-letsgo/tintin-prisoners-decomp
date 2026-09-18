@@ -1,24 +1,27 @@
-# ROM-free CI input
+# Tracked C core
 
-`tintin-core.tar.xz` contains generated Tintin C instructions and the required
-GB Recompiled runtime sources/headers, pinned at
-`9150f87d82fa98abcb6ea22329170463f9702eb8`.
-It is ROM-derived code, not a clean-room rewrite. It excludes `tintin_rom.c`,
-the raw ROM, game assets, SDL, and generated standalone executables.
-The runtime MIT license is included as `LICENSE.runtime` inside the archive.
-The upstream runtime license does not license the game's original content.
+The app compiles the source files in `generated/tintin/` directly. They are tracked
+as readable C/C++ and headers, together with the runtime sources and licenses.
+There is no source archive to unpack and overwrite edits.
 
-`manifest.json` records the archive and every member's SHA-256.
-`python3 tools/core_bundle.py unpack` validates before writing any source files.
-CI can compile from a fresh checkout without uploading or regenerating a ROM.
-
-To refresh after intentionally regenerating the pinned core locally:
+The runtime baseline is GB Recompiled revision
+`9150f87d82fa98abcb6ea22329170463f9702eb8`. `manifest.json` records SHA-256 values
+for the tracked source tree. CI checks these before compiling:
 
 ```sh
-make generate
-python3 tools/core_bundle.py pack
-python3 tools/core_bundle.py verify
+python3 tools/core_sources.py verify
 ```
 
-The archive uses sorted members and fixed file metadata for reproducible output.
-Review the manifest and generator changes together when updating the core.
+After reviewed source edits or intentional regeneration, refresh the manifest and
+commit it alongside the source changes:
+
+```sh
+python3 tools/core_sources.py record
+```
+
+`make generate` regenerates the C from your local ROM and overwrites source files;
+review its diff before committing. The generated `tintin_rom.c` contains a full ROM
+byte array and remains ignored. The large address-analysis metadata report is also
+ignored. The app excludes the ROM array and requires the user to supply the exact
+ROM at runtime. The standalone SDL build needs local regeneration to obtain that
+ignored ROM array.

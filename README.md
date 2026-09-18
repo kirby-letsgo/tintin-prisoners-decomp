@@ -29,7 +29,8 @@ annotations, and future native replacements separately in version-controlled fil
 
 - `tools/project.py`: reproducible commands and exact ROM/tool identity checks.
 - `.tools/gb-recompiled/`: pinned upstream checkout and tool build (ignored).
-- `generated/tintin/`: C, embedded ROM data, runtime snapshot, and address metadata (ignored).
+- `generated/tintin/`: tracked C sources, runtime snapshot and licenses. The full
+  embedded ROM array and large analysis report remain ignored.
 - `build/tintin/tintin`: native executable (ignored).
 - `logs/`: build logs, captures, state dumps, and local saves (ignored).
 - `docs/`: findings and validation notes.
@@ -53,7 +54,7 @@ Run `make app-install app-dev` after generating the C core. See
 ## CI app packages
 
 GitHub Actions builds optimized macOS and Android packages without a ROM. See
-[release builds](releases.md) and [source bundle](app/core/README.md).
+[release builds](releases.md) and [tracked C core](app/core/README.md).
 The app has checksummed saves, previous-generation backups, and pause-menu export/import.
 
 ## Sprite study
@@ -61,4 +62,5 @@ The app has checksummed saves, previous-generation backups, and pause-menu expor
 `make sprites` captures the opening route and exports editable indexed PNGs,
 assembled character references, palettes and source-location candidates. Start with
 [the sprite workflow](assets/README.md) and [observations](assets/observations.md).
-Generated artwork stays in the ignored `assets/extracted/` directory.
+Sprite PNGs, palettes, reference sheets and their manifest are tracked in
+`assets/extracted/`. Only raw capture intermediates remain ignored.

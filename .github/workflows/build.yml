@@ -36,7 +36,7 @@ jobs:
           cache-dependency-path: app/package-lock.json
       - name: Install pinned Rust
         run: rustup toolchain install 1.95.0 --profile minimal && rustup default 1.95.0
-      - run: python3 tools/core_bundle.py unpack
+      - run: python3 tools/core_sources.py verify
       - run: npm ci --prefix app
       - name: Check frontend and save recovery
         run: |
@@ -79,7 +79,7 @@ jobs:
           rustup default 1.95.0
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-36' 'build-tools;36.0.0' 'ndk;27.1.12297006'
           echo "NDK_HOME=$ANDROID_HOME/ndk/27.1.12297006" >> "$GITHUB_ENV"
-      - run: python3 tools/core_bundle.py unpack
+      - run: python3 tools/core_sources.py verify
       - run: npm ci --prefix app
       - name: Build optimized ARM64 APK
         run: npm --prefix app run tauri -- android build --ci --target aarch64 --apk

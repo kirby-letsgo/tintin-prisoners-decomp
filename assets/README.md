@@ -1,11 +1,13 @@
 # Sprite extraction — first reverse-engineering step
 
-The repeatable graphics study lives in `assets/extracted/` (ignored by Git).
+The repeatable graphics study lives in `assets/extracted/`. Sprite PNGs, original
+2bpp bytes, palettes, sheets and metadata are tracked in Git. Only raw snapshots
+in `assets/extracted/captures/` are ignored.
 It requires your exact local ROM and never modifies it or your app saves.
 
 ```sh
 python3 -m pip install -r tools/requirements-assets.txt
-python3 tools/core_bundle.py unpack
+python3 tools/core_sources.py verify
 python3 tools/sprites.py capture
 # Rebuild images from existing captures without running the game again:
 python3 tools/sprites.py export
@@ -18,7 +20,10 @@ catalogue; `assemblies-sheet.png` combines touching pieces into candidate figure
 The opening route selects English, passes the intro, then tries right/left movement
 in the first scene. It stops at frame 4200 and samples every six frames. This is
 observed coverage, not an exhaustive dump of every animation, enemy, or level.
-Move the extracted directory aside before capturing a new run, to preserve edits.
+Commit your art edits before regeneration and keep an editable copy separately.
+Move the raw `captures/` directory aside before capturing a new run; review the
+resulting image/manifest diff before committing. A fresh checkout can view and
+edit the tracked art without capturing again.
 
 ## What is exported
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reproduce the local Tintin recompilation without checking in ROM-derived files."""
+"""Reproduce the local Tintin recompilation; never commit the embedded ROM array."""
 import argparse
 import hashlib
 import json

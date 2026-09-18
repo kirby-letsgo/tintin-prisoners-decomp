@@ -2,7 +2,7 @@
 
 Release builds run in `.github/workflows/build.yml` on pushes to `main`, version
 tags, pull requests, and Actions → Build apps → Run workflow. No ROM or private
-save is sent to CI. The checked-in C source bundle is verified and unpacked first.
+save is sent to CI. The tracked C sources are verified and compiled directly; no archive overwrites source edits.
 
 Download the workflow artifacts:
 
@@ -37,7 +37,7 @@ with `apksigner` before upload. No GitHub Release or app-store publishing occurs
 ## Repeatable commands (used by CI)
 
 ```sh
-python3 tools/core_bundle.py unpack
+python3 tools/core_sources.py verify
 npm ci --prefix app
 npm run build --prefix app
 cargo test --locked --manifest-path app/src-tauri/Cargo.toml

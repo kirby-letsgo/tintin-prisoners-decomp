@@ -1,7 +1,11 @@
 rom/*
 !rom/.gitkeep
 /.tools/
-/generated/
+# The standalone generator embeds the complete ROM in this file.
+/generated/**/tintin_rom.c
+# Large, regenerable analysis report; the C sources are tracked.
+/generated/**/tintin_metadata.json
+/generated/**/build/
 /build/
 /logs/
 __pycache__/
@@ -19,4 +23,5 @@ __pycache__/
 *.keystore
 docs/
 
-/assets/extracted/
+# Raw graphics-memory snapshots are capture intermediates.
+/assets/extracted/captures/
