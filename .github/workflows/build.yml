@@ -65,7 +65,7 @@ jobs:
         run: |
           rustup toolchain install 1.95.0 --profile minimal --target aarch64-linux-android
           rustup default 1.95.0
-          sdkmanager 'platforms;android-36' 'build-tools;36.0.0' 'ndk;27.1.12297006'
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-36' 'build-tools;36.0.0' 'ndk;27.1.12297006'
           echo "NDK_HOME=$ANDROID_HOME/ndk/27.1.12297006" >> "$GITHUB_ENV"
       - run: python3 tools/core_bundle.py unpack
       - run: npm ci --prefix app
