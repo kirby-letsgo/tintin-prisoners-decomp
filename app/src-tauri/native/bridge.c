@@ -12,15 +12,14 @@ static uint32_t samples;
 
 #ifdef TT_ASSET_CAPTURE
 #include "ppu.h"
-/* Debug-only, versioned portable snapshot taken at the PPU VBlank callback. */
+/* Debug-only, versioned portable snapshot taken at the PPU frame-complete safepoint. */
 #define TT_GRAPHICS_BYTES (32 + 16384 + 160 + 64 + 64 + TT_PIXELS)
 static uint8_t graphics[TT_GRAPHICS_BYTES];
 static int graphics_ready;
-static void capture_graphics(GBContext *ctx, const uint8_t *framebuffer) {
-    (void)framebuffer;
+static void capture_graphics(GBContext *ctx) {
     GBPPU *ppu = (GBPPU *)ctx->ppu;
     memcpy(graphics, "TTVRAM01", 8);
-    uint32_t frame = (uint32_t)ctx->completed_frames;
+    uint32_t frame = (uint32_t)ctx->completed_frames + 1;
     for (unsigned i = 0; i < 4; i++) graphics[8 + i] = (uint8_t)(frame >> (8 * i));
     graphics[12] = ppu->lcdc;
     graphics[13] = ppu->ly;
@@ -76,9 +75,6 @@ int tt_load(const uint8_t *rom, size_t len) {
     gb_context_reset(next, true);
     GBPlatformCallbacks callbacks = {0};
     callbacks.on_audio_sample = audio_sample;
-#ifdef TT_ASSET_CAPTURE
-    callbacks.on_vblank = capture_graphics;
-#endif
     gb_set_platform_callbacks(next, &callbacks);
     tt_close();
     game = next;
@@ -101,6 +97,9 @@ size_t tt_tick(uint8_t pressed, uint8_t *packet, size_t capacity) {
         if (game->frame_done) gb_reset_frame(game);
         /* The runtime budget is already in system (not CPU) cycles. */
         uint32_t spent = gb_run_cycles(game, remaining);
+#ifdef TT_ASSET_CAPTURE
+        if (game->frame_done) capture_graphics(game);
+#endif
         if (!spent) break;
         remaining = spent >= remaining ? 0 : remaining - spent;
     }
@@ -137,9 +136,6 @@ static GBContext *read_candidate(const char *path) {
     }
     GBPlatformCallbacks callbacks = {0};
     callbacks.on_audio_sample = audio_sample;
-#ifdef TT_ASSET_CAPTURE
-    callbacks.on_vblank = capture_graphics;
-#endif
     gb_set_platform_callbacks(candidate, &callbacks);
     return candidate;
 }

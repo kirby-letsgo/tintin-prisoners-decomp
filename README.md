@@ -55,3 +55,10 @@ Run `make app-install app-dev` after generating the C core. See
 GitHub Actions builds optimized macOS and Android packages without a ROM. See
 [release builds](releases.md) and [source bundle](app/core/README.md).
 The app has checksummed saves, previous-generation backups, and pause-menu export/import.
+
+## Sprite study
+
+`make sprites` captures the opening route and exports editable indexed PNGs,
+assembled character references, palettes and source-location candidates. Start with
+[the sprite workflow](assets/README.md) and [observations](assets/observations.md).
+Generated artwork stays in the ignored `assets/extracted/` directory.

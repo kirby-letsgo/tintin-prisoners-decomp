@@ -13,3 +13,11 @@ app-build:
 app-test:
 	npm --prefix app run build
 	npm --prefix app test
+
+.PHONY: sprites sprites-export sprites-test
+sprites:
+	$(PYTHON) tools/sprites.py capture
+sprites-export:
+	$(PYTHON) tools/sprites.py export
+sprites-test:
+	$(PYTHON) -m unittest discover -s tools -p test_sprites.py -v

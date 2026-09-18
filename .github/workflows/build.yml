@@ -14,6 +14,16 @@ env:
   CARGO_BUILD_JOBS: 3
   CARGO_TERM_COLOR: always
 jobs:
+  sprite-tools:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - run: python -m pip install -r tools/requirements-assets.txt
+      - run: python -m unittest discover -s tools -p test_sprites.py -v
   macos:
     runs-on: macos-15
     timeout-minutes: 60
