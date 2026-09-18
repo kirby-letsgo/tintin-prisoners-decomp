@@ -36,6 +36,8 @@ jobs:
         env:
           APPLE_SIGNING_IDENTITY: '-'
         run: npm --prefix app run tauri -- build --ci --bundles app -- --locked
+      - name: Verify locked dependencies
+        run: git diff --exit-code -- app/package-lock.json app/src-tauri/Cargo.lock
       - name: Package app
         run: |
           mkdir -p artifacts
@@ -71,6 +73,8 @@ jobs:
       - run: npm ci --prefix app
       - name: Build optimized ARM64 APK
         run: npm --prefix app run tauri -- android build --ci --target aarch64 --apk
+      - name: Verify locked dependencies
+        run: git diff --exit-code -- app/package-lock.json app/src-tauri/Cargo.lock
       - name: Sign APK
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}

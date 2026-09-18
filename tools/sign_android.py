@@ -15,6 +15,10 @@ if len(apks) != 1:
     raise SystemExit(f'Expected one unsigned ARM64 release APK; found {len(apks)}')
 with tempfile.TemporaryDirectory(prefix='tintin-sign-') as temp:
     key = Path(temp) / 'signing.jks'
+    secret_names = ['ANDROID_KEYSTORE_BASE64', 'ANDROID_KEYSTORE_PASSWORD', 'ANDROID_KEY_ALIAS', 'ANDROID_KEY_PASSWORD']
+    supplied = [bool(os.environ.get(name)) for name in secret_names]
+    if any(supplied) and not all(supplied):
+        raise SystemExit('Android signing requires all four ANDROID_* secrets, or none for test signing')
     configured = bool(os.environ.get('ANDROID_KEYSTORE_BASE64'))
     if configured:
         for name in ['ANDROID_KEYSTORE_PASSWORD', 'ANDROID_KEY_ALIAS', 'ANDROID_KEY_PASSWORD']:
