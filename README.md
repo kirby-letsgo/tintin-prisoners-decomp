@@ -79,4 +79,8 @@ and the selection is remembered. Devices without WebGL retain the original
 Canvas renderer. Starting lives offers Game default (difficulty-dependent) or 1–9, applies to a new game
 from the title screen, and does not change lives in an existing save.
 
-High-resolution replacement spritesheets are not implemented yet.
+2× sprite packs can be loaded from the pause menu. Edit the single PNG in
+`assets/replacements/`, build it with `tools/sprite_pack.py`, and import the
+resulting `.tintinsprites` file. The app remembers the pack; unmatched graphics
+fall back to the originals. See `assets/replacements/README.md` for the workflow
+and the opening-scene coverage of the starter sheet.

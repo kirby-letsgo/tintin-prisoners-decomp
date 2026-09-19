@@ -1,3 +1,4 @@
+import { compileSpritePack, MAX_SPRITE_FILE } from "./spritePack";
 import { GameDisplay, readDisplayMode, type DisplayMode } from "./display";
 import { invoke } from "@tauri-apps/api/core";
 import { open, save as saveDialog } from "@tauri-apps/plugin-dialog";
@@ -9,6 +10,7 @@ export type PlayerState = {
   playing: boolean;
   busy: boolean;
   muted: boolean;
+  spritePack: boolean;
   startingLives: number;
   displayMode: DisplayMode;
   shadersSupported: boolean;
@@ -21,6 +23,7 @@ export const initialState: PlayerState = {
   playing: false,
   busy: false,
   muted: false,
+  spritePack: false,
   startingLives: 0,
   displayMode: "original",
   shadersSupported: true,
@@ -64,6 +67,7 @@ export class Player {
       const lives = Number(localStorage.getItem("starting-lives"));
       if (Number.isInteger(lives) && lives >= 0 && lives <= 9) this.update({ startingLives: lives });
     } catch {}
+    void invoke<boolean>("sprite_pack_active").then((spritePack) => this.update({ spritePack })).catch(() => {});
     void invoke<boolean>("recent_available")
       .then((recent) => this.update({ recent }))
       .catch(() => {});
@@ -74,6 +78,28 @@ export class Player {
   }
   private message(message: string, error = false) {
     this.update({ message, error });
+  }
+  async chooseSpritePack() {
+    if (this.state.busy) return;
+    await this.pause(); this.update({ busy: true, message: "", error: false });
+    try {
+      const path = await open({ multiple: false, directory: false, title: "Choose a 2× sprite pack",
+        filters: [{ name: "Tintin sprite pack", extensions: ["tintinsprites"] }] });
+      if (!path) return;
+      if ((await stat(path)).size > MAX_SPRITE_FILE) throw new Error("Sprite pack is too large.");
+      const binary = await compileSpritePack(await readFile(path));
+      await invoke("load_sprite_pack", binary);
+      this.update({ spritePack: true });
+      this.message("2× sprites loaded. Unmatched graphics use the originals.");
+    } catch (error) { this.message(String(error), true); }
+    finally { this.update({ busy: false }); }
+  }
+  async clearSpritePack() {
+    if (this.state.busy) return;
+    this.update({ busy: true });
+    try { await invoke("clear_sprite_pack"); this.update({ spritePack: false }); this.message("Original sprites restored."); }
+    catch (error) { this.message(String(error), true); }
+    finally { this.update({ busy: false }); }
   }
   async setStartingLives(lives: number) {
     try {
@@ -160,12 +186,11 @@ export class Player {
       if (packet.byteLength < 8 + 160 * 144 * 4)
         throw new Error("Incomplete game frame.");
       const samples = new DataView(packet).getUint32(0, true);
-      if (
-        samples > 4096 ||
-        packet.byteLength !== 8 + 160 * 144 * 4 + samples * 4
-      )
+      const originalLength = 8 + 160 * 144 * 4 + samples * 4;
+      const hd = packet.byteLength === originalLength + 320 * 288 * 4;
+      if (samples > 4096 || (!hd && packet.byteLength !== originalLength))
         throw new Error("Invalid game frame.");
-      this.display.render(new Uint8Array(packet, 8, 160 * 144 * 4));
+      this.display.render(new Uint8Array(packet, hd ? originalLength : 8, hd ? 320*288*4 : 160*144*4), hd ? 320 : 160, hd ? 288 : 144);
       this.queueAudio(packet, samples);
     } catch (error) {
       this.generation++;

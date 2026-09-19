@@ -23,7 +23,11 @@ jobs:
         with:
           python-version: '3.14'
       - run: python -m pip install -r tools/requirements-assets.txt
-      - run: python -m unittest discover -s tools -p test_sprites.py -v
+      - run: python -m unittest discover -s tools -p 'test_sprite*.py' -v
+      - name: Check native sprite compositor
+        run: |
+          cc -std=c11 -Wall -Wextra -Werror -O1 -fsanitize=address,undefined -Igenerated/tintin/runtime/include -Iapp/src-tauri/native tools/test_sprite_compositor.c app/src-tauri/native/sprites.c -o /tmp/test-sprite-compositor
+          /tmp/test-sprite-compositor
   macos:
     runs-on: macos-15
     timeout-minutes: 60

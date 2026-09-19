@@ -232,6 +232,128 @@ mod asset_capture {
         println!("Verified nine starting lives through frame {frame}; option changes and save restoration preserve live progress.");
     }
     #[test]
+    #[ignore = "local ROM and generated sprite template required"]
+    fn sprite_pack_route() {
+        let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..");
+        let path = std::fs::read_dir(root.join("rom"))
+            .unwrap()
+            .filter_map(Result::ok)
+            .map(|e| e.path())
+            .find(|p| p.extension().is_some_and(|e| e == "gbc"))
+            .unwrap();
+        let rom = std::fs::read(path).unwrap();
+        validate_rom(&rom).unwrap();
+        let original_pack = std::fs::read(root.join("logs/tintin-original.ttspk")).unwrap();
+        let _guard = CORE.lock().unwrap();
+        unsafe {
+            tintin_set_initial_lives(0);
+            assert_eq!(
+                tt_sprites_load(original_pack.as_ptr(), original_pack.len()),
+                1
+            );
+            assert_eq!(tt_load(rom.as_ptr(), rom.len()), 1);
+        }
+        let mut packet = vec![0; PACKET_MAX];
+        let mut hd = vec![0; HD_BYTES];
+        let mut graphics = vec![0; 32 + 16384 + 160 + 128 + 160 * 144 * 4];
+        let mut frame = 0;
+        let mut bucket = u32::MAX;
+        let mut checked = 0;
+        for _ in 0..6000 {
+            let buttons = if (1250..1260).contains(&frame) || (2000..2010).contains(&frame) {
+                16
+            } else if (1600..1610).contains(&frame) || (2400..2410).contains(&frame) {
+                128
+            } else if (3100..3450).contains(&frame) {
+                1
+            } else if (3500..3800).contains(&frame) {
+                2
+            } else {
+                0
+            };
+            assert!(unsafe { tt_tick(buttons, packet.as_mut_ptr(), packet.len()) } > 0);
+            frame = u32::from_le_bytes(packet[4..8].try_into().unwrap());
+            if frame >= 1200 && frame / 6 != bucket {
+                assert_eq!(unsafe { tt_hd_frame(hd.as_mut_ptr(), hd.len()) }, HD_BYTES);
+                for y in 0..288 {
+                    for x in 0..320 {
+                        let hi = (y * 320 + x) * 4;
+                        let lo = 8 + ((y / 2) * 160 + x / 2) * 4;
+                        assert_eq!(
+                            &hd[hi..hi + 4],
+                            &packet[lo..lo + 4],
+                            "Identity pack differs at frame {frame}, ({x},{y})"
+                        );
+                    }
+                }
+                let n = unsafe { tt_graphics_snapshot(graphics.as_mut_ptr(), graphics.len()) };
+                let baseline = root.join(format!("logs/code-study/captures/frame-{frame:05}.bin"));
+                assert_eq!(
+                    &graphics[..n],
+                    std::fs::read(baseline).unwrap(),
+                    "Guest output changed with the pack enabled"
+                );
+                if frame == 3300 {
+                    std::fs::write(root.join("logs/sprite-identity.rgba"), &hd).unwrap();
+                }
+                bucket = frame / 6;
+                checked += 1;
+            }
+            if frame >= 4200 {
+                break;
+            }
+        }
+        assert_eq!(checked, 501);
+        let save = root.join("logs/sprite-pack-test.state");
+        save_to(&save).unwrap();
+        let mut edited = original_pack.clone();
+        for record in edited[12..].chunks_exact_mut(1048) {
+            for (i, pixel) in record[24..].chunks_exact_mut(4).enumerate() {
+                if pixel[3] != 0 {
+                    pixel[0] = if i % 2 == 0 { 255 } else { 0 };
+                    pixel[1] = 0;
+                    pixel[2] = 255;
+                }
+            }
+        }
+        assert_eq!(unsafe { tt_sprites_load(edited.as_ptr(), edited.len()) }, 1);
+        restore_from(&save).unwrap();
+        for _ in 0..12 {
+            unsafe {
+                tt_tick(0, packet.as_mut_ptr(), packet.len());
+            }
+        }
+        assert_eq!(unsafe { tt_hd_frame(hd.as_mut_ptr(), hd.len()) }, HD_BYTES);
+        let mut differences = 0;
+        let mut detailed_pixels = 0;
+        for y in 0..144 {
+            for x in 0..160 {
+                let hi = (y * 2 * 320 + x * 2) * 4;
+                let lo = 8 + (y * 160 + x) * 4;
+                if hd[hi..hi + 4] != packet[lo..lo + 4] {
+                    differences += 1;
+                }
+                if hd[hi..hi + 4] != hd[hi + 4..hi + 8] {
+                    detailed_pixels += 1;
+                }
+            }
+        }
+        assert!(
+            differences > 50 && detailed_pixels > 50,
+            "Replacement art was not rendered at true 2x detail"
+        );
+        std::fs::write(root.join("logs/sprite-edited.rgba"), &hd).unwrap();
+        unsafe {
+            tt_sprites_clear();
+        }
+        assert_eq!(unsafe { tt_hd_frame(hd.as_mut_ptr(), hd.len()) }, 0);
+        restore_from(&save).unwrap();
+        unsafe {
+            tt_close();
+        }
+        println!("Verified {checked} identical guest snapshots and identity-pack frames; edited art changed {differences} pixels with {detailed_pixels} subpixel details after save restore.");
+    }
+    #[test]
     #[ignore = "local ROM required; invoked by tools/sprites.py capture"]
     fn capture_sprite_route() {
         let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..");

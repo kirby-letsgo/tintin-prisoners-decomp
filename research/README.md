@@ -46,6 +46,7 @@ Regeneration overwrites reviewed names and local runtime instrumentation. Reappl
 ```sh
 git apply --unidiff-zero research/runtime-trace.patch
 git apply --unidiff-zero research/game-options.patch
+git apply --unidiff-zero research/sprite-presentation.patch
 python3 tools/name_symbols.py
 python3 tools/core_sources.py record
 python3 tools/study_animation.py capture
@@ -59,3 +60,5 @@ reviewable; none of these commands commits or pushes anything.
 
 [Starting lives](lives.md) documents the first intentional gameplay modification.
 Frontend display shaders are independent of generated game code; see `app/src/display.ts`.
+
+[2× sprite replacements](sprite-replacements.md) explains the independent HD compositor and authoring format.

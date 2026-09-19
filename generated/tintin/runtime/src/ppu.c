@@ -4,6 +4,9 @@
  */
 
 #include "ppu.h"
+#ifdef TT_SPRITE_PACK
+#include "sprites.h"
+#endif
 #include "gbrt.h"
 #include "gbrt_debug.h"
 
@@ -996,6 +999,11 @@ static void ppu_render_dot(GBPPU* ppu, GBContext* ctx) {
         ppu->color_framebuffer[framebuffer_index] =
             resolve_bg_color(ppu, ctx, bg.palette, bg.raw_color, ppu->bgp);
     }
+#ifdef TT_SPRITE_PACK
+    if (tt_sprites_active()) tt_sprites_dot(ppu, ctx,
+        rgb555_to_rgba(resolve_bg_color(ppu, ctx, bg.palette, bg.raw_color, ppu->bgp)),
+        bg.raw_color, bg.priority, cgb_mode, rgb555_to_rgba(ppu->color_framebuffer[framebuffer_index]));
+#endif
 }
 
 /* Render a sprite-free run that stays within one fetched background/window
@@ -1073,6 +1081,10 @@ static void ppu_render_background_span(GBPPU* ppu,
             : apply_palette(raw_color, ppu->bgp);
         ppu->color_framebuffer[framebuffer_index] =
             resolve_bg_color(ppu, ctx, palette, raw_color, ppu->bgp);
+#ifdef TT_SPRITE_PACK
+        if (tt_sprites_active()) tt_sprites_background(ppu->draw_x + offset, ppu->ly,
+            rgb555_to_rgba(ppu->color_framebuffer[framebuffer_index]));
+#endif
     }
 }
 
@@ -1663,6 +1675,9 @@ void ppu_tick(GBPPU* ppu, GBContext* ctx, uint32_t cycles) {
                         !ppu_is_cgb_hardware(ctx);
                     if (!ppu->frame_ready) {
                         convert_to_rgb(ppu);
+#ifdef TT_SPRITE_PACK
+                        tt_sprites_finish();
+#endif
                         ppu->frame_ready = true;
                         ctx->frame_done = 1;
                     }
@@ -1859,6 +1874,9 @@ void ppu_write_register(GBPPU* ppu, GBContext* ctx, uint16_t addr, uint8_t value
         {
             uint8_t old_lcdc = ppu->lcdc;
             ppu->lcdc = value;
+#ifdef TT_SPRITE_PACK
+            if ((old_lcdc ^ value) & LCDC_LCD_ENABLE) tt_sprites_reset();
+#endif
             if ((old_lcdc & LCDC_LCD_ENABLE) && !(value & LCDC_LCD_ENABLE)) {
                 ppu->ly = 0;
                 ppu->scanline = 0;

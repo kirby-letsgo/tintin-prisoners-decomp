@@ -1,0 +1,27 @@
+diff --git a/generated/tintin/runtime/src/ppu.c b/generated/tintin/runtime/src/ppu.c
+index d3f7060..062765b 100644
+--- a/generated/tintin/runtime/src/ppu.c
++++ b/generated/tintin/runtime/src/ppu.c
+@@ -6,0 +7,3 @@
++#ifdef TT_SPRITE_PACK
++#include "sprites.h"
++#endif
+@@ -998,0 +1002,5 @@ static void ppu_render_dot(GBPPU* ppu, GBContext* ctx) {
++#ifdef TT_SPRITE_PACK
++    if (tt_sprites_active()) tt_sprites_dot(ppu, ctx,
++        rgb555_to_rgba(resolve_bg_color(ppu, ctx, bg.palette, bg.raw_color, ppu->bgp)),
++        bg.raw_color, bg.priority, cgb_mode, rgb555_to_rgba(ppu->color_framebuffer[framebuffer_index]));
++#endif
+@@ -1075,0 +1084,4 @@ static void ppu_render_background_span(GBPPU* ppu,
++#ifdef TT_SPRITE_PACK
++        if (tt_sprites_active()) tt_sprites_background(ppu->draw_x + offset, ppu->ly,
++            rgb555_to_rgba(ppu->color_framebuffer[framebuffer_index]));
++#endif
+@@ -1665,0 +1678,3 @@ void ppu_tick(GBPPU* ppu, GBContext* ctx, uint32_t cycles) {
++#ifdef TT_SPRITE_PACK
++                        tt_sprites_finish();
++#endif
+@@ -1861,0 +1877,3 @@ void ppu_write_register(GBPPU* ppu, GBContext* ctx, uint16_t addr, uint8_t value
++#ifdef TT_SPRITE_PACK
++            if ((old_lcdc ^ value) & LCDC_LCD_ENABLE) tt_sprites_reset();
++#endif

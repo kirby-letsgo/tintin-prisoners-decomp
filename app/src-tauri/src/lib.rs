@@ -13,12 +13,18 @@ mod saves;
 
 const ROM_LEN: usize = 1048576;
 const ROM_HASH: &str = "4c859ad08f74bcc004f01a69a7d380cdcdea79eb731a09f935337921096e4c20";
+const HD_BYTES: usize = 320 * 288 * 4;
+const SPRITE_MAX: usize = 12 + 1024 * 1048;
 const PACKET_MAX: usize = 8 + 160 * 144 * 4 + 4096 * 4;
 // Upstream globals require one lock around every native call, including lifecycle saves.
 static CORE: Mutex<bool> = Mutex::new(false);
 extern "C" {
     fn tt_load(rom: *const u8, len: usize) -> i32;
     fn tt_close();
+    fn tt_sprites_load(data: *const u8, length: usize) -> i32;
+    fn tt_sprites_active() -> i32;
+    fn tt_sprites_clear();
+    fn tt_hd_frame(out: *mut u8, capacity: usize) -> usize;
     fn tintin_set_initial_lives(lives: u8) -> i32;
     fn tt_tick(buttons: u8, packet: *mut u8, capacity: usize) -> usize;
     fn tt_save(path: *const std::ffi::c_char) -> i32;
@@ -155,7 +161,64 @@ async fn tick(buttons: u8) -> Result<Response, String> {
         return Err("The game could not produce a frame.".into());
     }
     packet.truncate(length);
+    if unsafe { tt_sprites_active() } != 0 {
+        packet.resize(length + HD_BYTES, 0);
+        if unsafe { tt_hd_frame(packet[length..].as_mut_ptr(), HD_BYTES) } != HD_BYTES {
+            return Err("Could not produce the replacement sprite frame.".into());
+        }
+    }
     Ok(Response::new(packet))
+}
+fn read_sprite_pack(path: &Path) -> Result<Vec<u8>, String> {
+    if std::fs::metadata(path).map_err(|e| e.to_string())?.len() > SPRITE_MAX as u64 {
+        return Err("Sprite pack is too large.".into());
+    }
+    std::fs::read(path).map_err(|e| e.to_string())
+}
+#[tauri::command]
+fn sprite_pack_active() -> Result<bool, String> {
+    let _guard = CORE.lock().map_err(|_| "Game state unavailable")?;
+    Ok(unsafe { tt_sprites_active() } != 0)
+}
+#[tauri::command]
+fn load_sprite_pack(app: tauri::AppHandle, request: Request<'_>) -> Result<(), String> {
+    let InvokeBody::Raw(bytes) = request.body() else {
+        return Err("Expected sprite bytes.".into());
+    };
+    let _guard = CORE.lock().map_err(|_| "Game state unavailable")?;
+    let dir = data_dir(&app)?;
+    let path = dir.join("sprites.pack");
+    let previous = read_sprite_pack(&path).ok();
+    if bytes.len() > SPRITE_MAX || unsafe { tt_sprites_load(bytes.as_ptr(), bytes.len()) } == 0 {
+        return Err("Invalid sprite pack. The previous pack is unchanged.".into());
+    }
+    let pending = dir.join("sprites.pending");
+    if let Err(error) = saves::stage(&pending, bytes)
+        .and_then(|_| std::fs::rename(&pending, &path).map_err(|e| e.to_string()))
+    {
+        unsafe {
+            tt_sprites_clear();
+            if let Some(old) = previous {
+                tt_sprites_load(old.as_ptr(), old.len());
+            }
+        }
+        return Err(format!("Could not remember the sprite pack: {error}"));
+    }
+    Ok(())
+}
+#[tauri::command]
+fn clear_sprite_pack(app: tauri::AppHandle) -> Result<(), String> {
+    let _guard = CORE.lock().map_err(|_| "Game state unavailable")?;
+    let path = data_dir(&app)?.join("sprites.pack");
+    match std::fs::remove_file(path) {
+        Ok(()) => {}
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
+        Err(e) => return Err(e.to_string()),
+    }
+    unsafe {
+        tt_sprites_clear();
+    }
+    Ok(())
 }
 #[tauri::command]
 fn save_game(app: tauri::AppHandle, automatic: bool) -> Result<(), String> {
@@ -233,7 +296,21 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
+        .setup(|app| {
+            let _guard = CORE.lock().map_err(|_| "Game state unavailable")?;
+            if let Ok(dir) = data_dir(app.handle()) {
+                if let Ok(bytes) = read_sprite_pack(&dir.join("sprites.pack")) {
+                    unsafe {
+                        tt_sprites_load(bytes.as_ptr(), bytes.len());
+                    }
+                }
+            }
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
+            sprite_pack_active,
+            load_sprite_pack,
+            clear_sprite_pack,
             set_starting_lives,
             load_rom,
             load_recent,

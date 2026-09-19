@@ -48,6 +48,10 @@ export class GameDisplay {
   private buffer: WebGLBuffer | null = null;
   private texture: WebGLTexture | null = null;
   private mode: DisplayMode = "original";
+  private frameWidth = 160;
+  private frameHeight = 144;
+  private textureWidth = 160;
+  private textureHeight = 144;
   private lastFrame = new Uint8Array(160 * 144 * 4);
   private observer: ResizeObserver;
   private disposed = false;
@@ -96,24 +100,31 @@ export class GameDisplay {
     gl.bindTexture(gl.TEXTURE_2D, this.texture);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 160, 144, 0, gl.RGBA, gl.UNSIGNED_BYTE, this.lastFrame);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.frameWidth, this.frameHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, this.lastFrame);
+    this.textureWidth = this.frameWidth; this.textureHeight = this.frameHeight;
     gl.uniform1i(gl.getUniformLocation(this.program, "frame"), 0);
   }
   setMode(mode: DisplayMode) { this.mode = mode; this.draw(); }
-  render(bytes: Uint8Array) { this.lastFrame.set(bytes); this.draw(); }
+  render(bytes: Uint8Array, width = 160, height = 144) {
+    if (!((width === 160 && height === 144) || (width === 320 && height === 288)) || bytes.length !== width*height*4)
+      throw new Error("Invalid display frame dimensions.");
+    if (this.lastFrame.length !== bytes.length) this.lastFrame = new Uint8Array(bytes.length);
+    this.frameWidth = width; this.frameHeight = height;
+    this.lastFrame.set(bytes); this.draw();
+  }
   private draw() {
     if (this.disposed) return;
     const gl = this.gl;
     if (!gl) {
-      this.canvas.width = 160;
-      this.canvas.height = 144;
-      this.context2d?.putImageData(new ImageData(new Uint8ClampedArray(this.lastFrame), 160, 144), 0, 0);
+      this.canvas.width = this.frameWidth;
+      this.canvas.height = this.frameHeight;
+      this.context2d?.putImageData(new ImageData(new Uint8ClampedArray(this.lastFrame), this.frameWidth, this.frameHeight), 0, 0);
       return;
     }
     if (gl.isContextLost()) return;
     // Fit an exact 10:9 surface. Keep effects aligned with game pixels, not letterboxes.
     const rect = this.canvas.getBoundingClientRect();
-    const scale = Math.max(1, Math.min(8, Math.ceil(Math.min(rect.width / 160, rect.height / 144) * devicePixelRatio)));
+    const scale = Math.max(this.frameWidth / 160, Math.min(8, Math.ceil(Math.min(rect.width / 160, rect.height / 144) * devicePixelRatio)));
     const width = 160 * scale, height = 144 * scale;
     if (this.canvas.width !== width || this.canvas.height !== height) {
       this.canvas.width = width; this.canvas.height = height;
@@ -124,7 +135,12 @@ export class GameDisplay {
     const filter = this.mode === "smooth" ? gl.LINEAR : gl.NEAREST;
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, filter);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, filter);
-    gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 160, 144, gl.RGBA, gl.UNSIGNED_BYTE, this.lastFrame);
+    if (this.textureWidth !== this.frameWidth || this.textureHeight !== this.frameHeight) {
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.frameWidth, this.frameHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, this.lastFrame);
+      this.textureWidth = this.frameWidth; this.textureHeight = this.frameHeight;
+    } else {
+      gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, this.frameWidth, this.frameHeight, gl.RGBA, gl.UNSIGNED_BYTE, this.lastFrame);
+    }
     gl.uniform1i(gl.getUniformLocation(this.program!, "effect"), ["original", "smooth", "lcd", "crt"].indexOf(this.mode));
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }

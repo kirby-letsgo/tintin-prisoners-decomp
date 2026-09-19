@@ -166,6 +166,11 @@ export default function App() {
             >
               Choose ROM
             </button>
+            <button className="secondary w-full" disabled={state.busy} onClick={() => void game?.chooseSpritePack()}>
+              {state.spritePack ? "Change 2× sprite pack" : "Load 2× sprite pack"}
+            </button>
+            {state.spritePack && <button className="w-full py-2 text-sm text-zinc-400" disabled={state.busy}
+              onClick={() => void game?.clearSpritePack()}>Use original sprites</button>}
             <label className="flex items-center justify-between gap-3 text-sm text-zinc-300">
               Starting lives
               <select aria-label="Starting lives" className="secondary" value={state.startingLives}

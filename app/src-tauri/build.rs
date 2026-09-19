@@ -32,6 +32,8 @@ fn main() {
         .include("native")
         .file(adapter)
         .file("native/bridge.c")
+        .file("native/sprites.c")
+        .define("TT_SPRITE_PACK", None)
         .std("c11")
         .opt_level_str(if env::var("PROFILE").as_deref() == Ok("release") {
             "s"

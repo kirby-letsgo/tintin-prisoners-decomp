@@ -1,4 +1,5 @@
 #include "bridge.h"
+#include "sprites.h"
 #include "tintin.h"
 #include "gbrt.h"
 #include <string.h>
@@ -58,6 +59,7 @@ static void audio_sample(GBContext *ctx, int16_t left, int16_t right) {
 void tt_close(void) {
     if (game) gb_context_destroy(game);
     game = NULL;
+    tt_sprites_reset();
     g_joypad_buttons = g_joypad_dpad = 0xff;
     samples = 0;
 #ifdef TT_ASSET_CAPTURE
@@ -149,5 +151,21 @@ int tt_restore(const char *path) {
     GBContext *candidate = read_candidate(path);
     if (!candidate) return 0;
     gb_context_destroy(game); game = candidate;
+    tt_sprites_reset();
     g_joypad_buttons = g_joypad_dpad = 0xff; samples = 0; return 1;
+}
+
+/* Optional HD suffix; original tick protocol remains byte-for-byte compatible. */
+size_t tt_hd_frame(uint8_t *out, size_t capacity) {
+    if (!game || !tt_sprites_active() || capacity < TT_HD_BYTES) return 0;
+    const uint32_t *hd = tt_sprites_frame();
+    if (!(((GBPPU *)game->ppu)->lcdc & LCDC_LCD_ENABLE)) hd = NULL;
+    const uint32_t *original = gb_get_framebuffer(game);
+    for (unsigned y = 0; y < 288; ++y) for (unsigned x = 0; x < 320; ++x) {
+        unsigned i = y * 320 + x;
+        uint32_t color = hd ? hd[i] : original[(y / 2) * 160 + x / 2];
+        out[i*4] = (uint8_t)(color >> 16); out[i*4+1] = (uint8_t)(color >> 8);
+        out[i*4+2] = (uint8_t)color; out[i*4+3] = 255;
+    }
+    return TT_HD_BYTES;
 }
