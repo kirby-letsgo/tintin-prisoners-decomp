@@ -156,7 +156,80 @@ mod integration_tests {
 mod asset_capture {
     use crate::*;
     extern "C" {
+        fn tt_debug_lives() -> u8;
         fn tt_graphics_snapshot(out: *mut u8, capacity: usize) -> usize;
+    }
+    #[test]
+    #[ignore = "requires local ROM; verifies new-game lives and save isolation"]
+    fn starting_lives_route() {
+        let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..");
+        let path = std::fs::read_dir(root.join("rom"))
+            .unwrap()
+            .filter_map(Result::ok)
+            .map(|entry| entry.path())
+            .find(|path| path.extension().is_some_and(|ext| ext == "gbc"))
+            .unwrap();
+        let rom = std::fs::read(path).unwrap();
+        validate_rom(&rom).unwrap();
+        let _guard = CORE.lock().unwrap();
+        unsafe {
+            assert_eq!(tintin_set_initial_lives(0), 1);
+            assert_eq!(tintin_set_initial_lives(10), 0);
+            assert_eq!(tintin_set_initial_lives(0), 1);
+            assert_eq!(tt_load(rom.as_ptr(), rom.len()), 1);
+        }
+        let mut packet = vec![0; PACKET_MAX];
+        let mut frame = 0;
+        let mut configured = false;
+        for _ in 0..5000 {
+            let buttons = if (1250..1260).contains(&frame) || (2000..2010).contains(&frame) {
+                16
+            } else if (1600..1610).contains(&frame) || (2400..2410).contains(&frame) {
+                128
+            } else {
+                0
+            };
+            assert!(unsafe { tt_tick(buttons, packet.as_mut_ptr(), packet.len()) } > 0);
+            frame = u32::from_le_bytes(packet[4..8].try_into().unwrap());
+            if frame >= 1500 && !configured {
+                assert_eq!(unsafe { tintin_set_initial_lives(9) }, 1);
+                configured = true;
+            }
+            if frame >= 3300 {
+                break;
+            }
+        }
+        assert!(frame >= 3300);
+        assert_eq!(
+            unsafe { tt_debug_lives() },
+            9,
+            "New game should use the configured lives"
+        );
+        std::fs::create_dir_all(root.join("logs")).unwrap();
+        std::fs::write(
+            root.join("logs/lives-nine.rgba"),
+            &packet[8..8 + 160 * 144 * 4],
+        )
+        .unwrap();
+        let save = root.join("logs/lives-test.state");
+        save_to(&save).unwrap();
+        assert_eq!(unsafe { tintin_set_initial_lives(1) }, 1);
+        assert_eq!(
+            unsafe { tt_debug_lives() },
+            9,
+            "Changing the preference must not change live progress"
+        );
+        restore_from(&save).unwrap();
+        assert_eq!(
+            unsafe { tt_debug_lives() },
+            9,
+            "Loading a save must retain its lives"
+        );
+        unsafe {
+            tt_close();
+            tintin_set_initial_lives(0);
+        }
+        println!("Verified nine starting lives through frame {frame}; option changes and save restoration preserve live progress.");
     }
     #[test]
     #[ignore = "local ROM required; invoked by tools/sprites.py capture"]

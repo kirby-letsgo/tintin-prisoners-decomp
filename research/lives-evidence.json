@@ -1,0 +1,19 @@
+{
+  "rom_sha256": "4c859ad08f74bcc004f01a69a7d380cdcdea79eb731a09f935337921096e4c20",
+  "counter": "WRAM bank 1:DF87",
+  "initialization_read": "00:0A8A",
+  "default_table": [
+    7,
+    5,
+    3
+  ],
+  "preference_changed_at_frame": 1500,
+  "configured_lives": 9,
+  "checked_at_frame": 3300,
+  "observed_lives": 9,
+  "after_preference_changed_to_1": 9,
+  "after_save_restore": 9,
+  "default_graphics_snapshots_matching_baseline": 501,
+  "hud_frame_sha256": "97ac73000df84a74b1532306cfe6844ade9c2cf166653af32a369c9d7b9362c0",
+  "limitations": "Opening route and save preservation verified; no automated death/game-over route in this pass."
+}

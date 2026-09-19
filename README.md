@@ -70,3 +70,13 @@ Sprite PNGs, palettes, reference sheets and their manifest are tracked in
 Start with [the code guide](research/README.md) and the verified
 [actor tile-upload path](research/graphics.md). The named generated entry points
 keep original timing; the readable C reference explains the same data flow.
+
+### Display and starting lives
+
+Open the pause menu with Escape (or the phone menu button). Display offers
+Original pixels, Smooth, LCD grid and CRT scanlines; effects run in the frontend
+and the selection is remembered. Devices without WebGL retain the original
+Canvas renderer. Starting lives offers Game default (difficulty-dependent) or 1–9, applies to a new game
+from the title screen, and does not change lives in an existing save.
+
+High-resolution replacement spritesheets are not implemented yet.

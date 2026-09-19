@@ -1,3 +1,4 @@
+import { displayModes, type DisplayMode } from "./display";
 import { useState, type ReactNode, type PointerEvent } from "react";
 import { usePlayer } from "./usePlayer";
 import type { Player } from "./player";
@@ -118,7 +119,7 @@ export default function App() {
       )}
       {state.loaded && !state.playing && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/80 p-6 text-white">
-          <section className="w-full max-w-xs space-y-3">
+          <section className="max-h-full w-full max-w-xs space-y-3 overflow-y-auto">
             <button
               className="primary w-full"
               disabled={state.busy}
@@ -165,6 +166,30 @@ export default function App() {
             >
               Choose ROM
             </button>
+            <label className="flex items-center justify-between gap-3 text-sm text-zinc-300">
+              Starting lives
+              <select aria-label="Starting lives" className="secondary" value={state.startingLives}
+                disabled={state.busy} onChange={(event) => void game?.setStartingLives(Number(event.target.value))}>
+                <option value={0}>Game default</option>
+                {Array.from({ length: 9 }, (_, i) => i + 1).map((lives) => <option key={lives} value={lives}>{lives}</option>)}
+              </select>
+            </label>
+            <p className="text-xs text-zinc-400">Applies when starting a new game from the title screen. Saved games keep their lives.</p>
+            <label className="flex items-center justify-between gap-3 text-sm text-zinc-300">
+              Display
+              <select
+                aria-label="Display effect"
+                className="secondary max-w-48"
+                value={state.displayMode}
+                disabled={!state.shadersSupported}
+                onChange={(event) => game?.setDisplayMode(event.target.value as DisplayMode)}
+              >
+                {Object.entries(displayModes).map(([value, label]) => (
+                  <option key={value} value={value}>{label}</option>
+                ))}
+              </select>
+            </label>
+            {!state.shadersSupported && <p className="text-xs text-zinc-400">Display effects are unavailable on this device.</p>}
             <button
               className="w-full py-2 text-sm text-zinc-400"
               onClick={() => void game?.toggleSound()}

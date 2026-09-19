@@ -39,6 +39,7 @@ static void capture_graphics(GBContext *ctx) {
     }
     graphics_ready = 1;
 }
+uint8_t tt_debug_lives(void) { return game ? game->wram[0x1f87] : 0; }
 size_t tt_graphics_snapshot(uint8_t *out, size_t capacity) {
     if (!game || !graphics_ready || capacity < sizeof(graphics)) return 0;
     memcpy(out, graphics, sizeof(graphics));

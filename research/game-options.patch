@@ -1,0 +1,29 @@
+diff --git a/generated/tintin/tintin.c b/generated/tintin/tintin.c
+index 3b776e2..bdc646a 100644
+--- a/generated/tintin/tintin.c
++++ b/generated/tintin/tintin.c
+@@ -6,0 +7,8 @@
++static uint8_t initial_lives = 0;
++uint8_t tintin_initial_lives(void) { return initial_lives; }
++int tintin_set_initial_lives(uint8_t lives) {
++    if (lives > 9) return 0;
++    initial_lives = lives;
++    return 1;
++}
++
+diff --git a/generated/tintin/tintin.h b/generated/tintin/tintin.h
+index ff1adae..1727fd6 100644
+--- a/generated/tintin/tintin.h
++++ b/generated/tintin/tintin.h
+@@ -6,0 +7,4 @@
++/* Host preference, used only by the new-game initializer at 00:0A8A. */
++uint8_t tintin_initial_lives(void);
++int tintin_set_initial_lives(uint8_t lives);
++
+diff --git a/generated/tintin/tintin_funcs_1.c b/generated/tintin/tintin_funcs_1.c
+index 8534544..a0d3ee7 100644
+--- a/generated/tintin/tintin_funcs_1.c
++++ b/generated/tintin/tintin_funcs_1.c
+@@ -26423,0 +26424,2 @@ pc_0a8a:
++    /* Override only new-game lives; zero retains the difficulty table value. */
++    if (tintin_initial_lives()) ctx->a = tintin_initial_lives();

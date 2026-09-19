@@ -4,6 +4,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+static uint8_t initial_lives = 0;
+uint8_t tintin_initial_lives(void) { return initial_lives; }
+int tintin_set_initial_lives(uint8_t lives) {
+    if (lives > 9) return 0;
+    initial_lives = lives;
+    return 1;
+}
+
 /* Bank dispatch - routes calls to the correct bank function */
 void tintin_dispatch_00(GBContext* ctx, uint16_t addr, uint16_t bank);
 void tintin_dispatch_01(GBContext* ctx, uint16_t addr, uint16_t bank);

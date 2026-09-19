@@ -19,6 +19,7 @@ static CORE: Mutex<bool> = Mutex::new(false);
 extern "C" {
     fn tt_load(rom: *const u8, len: usize) -> i32;
     fn tt_close();
+    fn tintin_set_initial_lives(lives: u8) -> i32;
     fn tt_tick(buttons: u8, packet: *mut u8, capacity: usize) -> usize;
     fn tt_save(path: *const std::ffi::c_char) -> i32;
     fn tt_validate(path: *const std::ffi::c_char) -> i32;
@@ -111,6 +112,15 @@ fn load_bytes(app: &tauri::AppHandle, bytes: &[u8]) -> Result<String, String> {
     }
     *loaded = true;
     saves::recover(&dir, restore_from)
+}
+
+#[tauri::command]
+fn set_starting_lives(lives: u8) -> Result<(), String> {
+    let _guard = CORE.lock().map_err(|_| "Game state unavailable")?;
+    if unsafe { tintin_set_initial_lives(lives) } == 0 {
+        return Err("Choose game default (0) or 1–9 starting lives.".into());
+    }
+    Ok(())
 }
 
 #[tauri::command]
@@ -224,6 +234,7 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .invoke_handler(tauri::generate_handler![
+            set_starting_lives,
             load_rom,
             load_recent,
             recent_available,

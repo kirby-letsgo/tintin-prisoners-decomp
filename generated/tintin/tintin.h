@@ -4,6 +4,10 @@
 
 #include "gbrt.h"
 
+/* Host preference, used only by the new-game initializer at 00:0A8A. */
+uint8_t tintin_initial_lives(void);
+int tintin_set_initial_lives(uint8_t lives);
+
 const GBConfig* tintin_default_config(void);
 void tintin_run(GBContext* ctx);
 void tintin_init(GBContext* ctx);

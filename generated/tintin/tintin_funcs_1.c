@@ -26421,6 +26421,8 @@ loc_0a89:
 pc_0a8a:
     /* 0a8a */     gb_tick(ctx, 7);
     ctx->a = gb_read8(ctx, ctx->hl);
+    /* Override only new-game lives; zero retains the difficulty table value. */
+    if (tintin_initial_lives()) ctx->a = tintin_initial_lives();
     gb_tick(ctx, 1);
     ctx->pc = 0xa8b;
     if (gbrt_generated_safepoint(ctx)) return;

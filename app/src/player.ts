@@ -1,3 +1,4 @@
+import { GameDisplay, readDisplayMode, type DisplayMode } from "./display";
 import { invoke } from "@tauri-apps/api/core";
 import { open, save as saveDialog } from "@tauri-apps/plugin-dialog";
 import { readFile, writeFile, stat } from "@tauri-apps/plugin-fs";
@@ -8,6 +9,9 @@ export type PlayerState = {
   playing: boolean;
   busy: boolean;
   muted: boolean;
+  startingLives: number;
+  displayMode: DisplayMode;
+  shadersSupported: boolean;
   message: string;
   error: boolean;
 };
@@ -17,6 +21,9 @@ export const initialState: PlayerState = {
   playing: false,
   busy: false,
   muted: false,
+  startingLives: 0,
+  displayMode: "original",
+  shadersSupported: true,
   message: "",
   error: false,
 };
@@ -43,15 +50,20 @@ export class Player {
   private audioTime = 0;
   private sources = new Set<AudioBufferSourceNode>();
   private deadline = 0;
-  private image: ImageData;
-  private ctx: CanvasRenderingContext2D;
+  private display: GameDisplay;
   constructor(
     private canvas: HTMLCanvasElement,
     private changed: (state: PlayerState) => void,
   ) {
-    this.ctx = canvas.getContext("2d", { alpha: false })!;
-    this.ctx.imageSmoothingEnabled = false;
-    this.image = this.ctx.createImageData(160, 144);
+    this.display = new GameDisplay(canvas);
+    this.update({ shadersSupported: this.display.supported });
+    const displayMode = this.display.supported ? readDisplayMode() : "original";
+    this.display.setMode(displayMode);
+    this.update({ displayMode });
+    try {
+      const lives = Number(localStorage.getItem("starting-lives"));
+      if (Number.isInteger(lives) && lives >= 0 && lives <= 9) this.update({ startingLives: lives });
+    } catch {}
     void invoke<boolean>("recent_available")
       .then((recent) => this.update({ recent }))
       .catch(() => {});
@@ -62,6 +74,18 @@ export class Player {
   }
   private message(message: string, error = false) {
     this.update({ message, error });
+  }
+  async setStartingLives(lives: number) {
+    try {
+      await invoke("set_starting_lives", { lives });
+      this.update({ startingLives: lives });
+      try { localStorage.setItem("starting-lives", String(lives)); } catch {}
+    } catch (error) { this.message(String(error), true); }
+  }
+  setDisplayMode(displayMode: DisplayMode) {
+    this.display.setMode(displayMode);
+    this.update({ displayMode });
+    try { localStorage.setItem("display-mode", displayMode); } catch {}
   }
   press(source: string, value: number) {
     if (this.state.playing) this.held.set(source, value);
@@ -141,8 +165,7 @@ export class Player {
         packet.byteLength !== 8 + 160 * 144 * 4 + samples * 4
       )
         throw new Error("Invalid game frame.");
-      this.image.data.set(new Uint8Array(packet, 8, 160 * 144 * 4));
-      this.ctx.putImageData(this.image, 0, 0);
+      this.display.render(new Uint8Array(packet, 8, 160 * 144 * 4));
       this.queueAudio(packet, samples);
     } catch (error) {
       this.generation++;
@@ -213,6 +236,7 @@ export class Player {
           "Choose the 1 MiB Europe edition of Tintin: Prisoners of the Sun.",
         );
       const bytes = await readFile(selected);
+      await invoke("set_starting_lives", { lives: this.state.startingLives });
       const warning = await invoke<string>("load_rom", bytes);
       try {
         localStorage.setItem("last-rom-location", selected);
@@ -243,6 +267,7 @@ export class Player {
     this.update({ busy: true, message: "", error: false });
     await this.ensureAudio();
     try {
+      await invoke("set_starting_lives", { lives: this.state.startingLives });
       const warning = await invoke<string>("load_recent");
       this.update({
         loaded: true,
@@ -324,6 +349,7 @@ export class Player {
   }
   async dispose() {
     await this.pause();
+    this.display.dispose();
     await this.audio?.close();
     await invoke("unload_rom");
   }
