@@ -52,9 +52,9 @@ export function StartMenu({
           <button
             className={`${menu.link} w-full`}
             disabled={state.busy}
-            onClick={() => void game?.choose()}
+            onClick={() => void game?.restartRun()}
           >
-            Choose another ROM
+            Restart run
           </button>
         )}
       </div>

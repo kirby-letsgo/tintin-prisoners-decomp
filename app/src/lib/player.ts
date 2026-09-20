@@ -295,6 +295,11 @@ export class Player {
     if (!this.state.busy && levels.some((level) => level.id === selectedLevel))
       this.update({ selectedLevel });
   }
+  async restartRun() {
+    if (this.state.busy) return;
+    this.selectLevel(0);
+    await this.startLevel();
+  }
   async startLevel() {
     if (this.state.busy) return;
     if (!this.state.recent) {
