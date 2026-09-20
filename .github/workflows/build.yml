@@ -92,6 +92,10 @@ jobs:
           echo "NDK_HOME=$ANDROID_HOME/ndk/27.1.12297006" >> "$GITHUB_ENV"
       - run: python3 tools/core_sources.py verify
       - run: npm ci --prefix app
+      - name: Generate Android launcher icons
+        run: |
+          npm --prefix app run tauri -- icon "$GITHUB_WORKSPACE/app/src-tauri/icons/icon.png" --output "$RUNNER_TEMP/tintin-icons"
+          cp -R "$RUNNER_TEMP/tintin-icons/android/." app/src-tauri/gen/android/app/src/main/res/
       - name: Build optimized ARM64 APK
         run: npm --prefix app run tauri -- android build --ci --target aarch64 --apk
       - name: Verify locked dependencies

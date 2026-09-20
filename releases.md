@@ -77,10 +77,14 @@ replay tests remain local because they require the user's ROM.
 `icon.icns` explicitly: relying on the bundler to convert the single large PNG
 failed with `No matching IconType`. CI regenerates the ICNS from the master on
 every macOS build, so changing the PNG updates the release automatically.
-The checked-in ICNS also supports local builds. To refresh it locally:
+Android uses the launcher resources in `app/src-tauri/gen/android/app/src/main/res/`,
+not the desktop bundle icon list. CI regenerates and copies the density-specific
+PNGs and adaptive icon resources from the same master before every APK build.
+The checked-in resources also support local builds. To refresh both platforms locally:
 
 ```sh
 # From app/:
 npm run tauri -- icon src-tauri/icons/icon.png --output ../logs/icon-build
 cp ../logs/icon-build/icon.icns src-tauri/icons/icon.icns
+cp -R ../logs/icon-build/android/. src-tauri/gen/android/app/src/main/res/
 ```
