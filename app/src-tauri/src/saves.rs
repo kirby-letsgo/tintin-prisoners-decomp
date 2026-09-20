@@ -210,19 +210,24 @@ pub fn recover(dir: &Path, restore: impl Fn(&Path) -> Result<()>) -> Result<Stri
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::sync::atomic::{AtomicU64, Ordering};
+    static NEXT_TEMP: AtomicU64 = AtomicU64::new(0);
     struct Temp(PathBuf);
     impl Temp {
         fn new() -> Self {
-            let stamp = SystemTime::now()
-                .duration_since(UNIX_EPOCH)
-                .unwrap()
-                .as_nanos();
-            let dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join(format!(
-                "../../logs/save-tests/{}-{stamp}",
-                std::process::id()
-            ));
-            fs::create_dir_all(&dir).unwrap();
-            Self(dir)
+            let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../logs/save-tests");
+            fs::create_dir_all(&root).unwrap();
+            loop {
+                // Clock precision is not uniqueness: parallel tests can observe
+                // the same timestamp and otherwise delete each other's files.
+                let id = NEXT_TEMP.fetch_add(1, Ordering::Relaxed);
+                let dir = root.join(format!("{}-{id}", std::process::id()));
+                match fs::create_dir(&dir) {
+                    Ok(()) => return Self(dir),
+                    Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => continue,
+                    Err(error) => panic!("Could not create test directory: {error}"),
+                }
+            }
         }
     }
     impl Drop for Temp {
@@ -230,6 +235,28 @@ mod tests {
             let _ = fs::remove_dir_all(&self.0);
         }
     }
+    #[test]
+    fn parallel_test_directories_are_independent() {
+        let barrier = std::sync::Arc::new(std::sync::Barrier::new(16));
+        let workers: Vec<_> = (0..16)
+            .map(|_| {
+                let barrier = barrier.clone();
+                std::thread::spawn(move || {
+                    barrier.wait();
+                    Temp::new()
+                })
+            })
+            .collect();
+        let mut dirs: Vec<_> = workers
+            .into_iter()
+            .map(|worker| worker.join().unwrap())
+            .collect();
+        let unique: std::collections::HashSet<_> = dirs.iter().map(|dir| dir.0.clone()).collect();
+        assert_eq!(unique.len(), dirs.len());
+        drop(dirs.pop());
+        assert!(dirs.iter().all(|dir| dir.0.is_dir()));
+    }
+
     fn valid(data: &[u8]) -> bool {
         decode(data).is_ok()
     }
