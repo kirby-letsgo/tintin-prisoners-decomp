@@ -8,6 +8,11 @@
 uint8_t tintin_initial_lives(void);
 int tintin_set_initial_lives(uint8_t lives);
 
+int tintin_request_start_scene(uint8_t scene);
+int tintin_start_scene_pending(void);
+uint8_t tintin_apply_start_scene(GBContext *ctx, uint8_t original);
+uint8_t tintin_scene_intro_previous(uint8_t original);
+
 const GBConfig* tintin_default_config(void);
 void tintin_run(GBContext* ctx);
 void tintin_init(GBContext* ctx);

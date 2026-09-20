@@ -47,13 +47,15 @@ Regeneration overwrites reviewed names and local runtime instrumentation. Reappl
 git apply --unidiff-zero research/runtime-trace.patch
 git apply --unidiff-zero research/game-options.patch
 git apply --unidiff-zero research/sprite-presentation.patch
+git apply --unidiff-zero research/level-select.patch
 python3 tools/name_symbols.py
 python3 tools/core_sources.py record
 python3 tools/study_animation.py capture
 ```
 
-Apply the patch only to freshly regenerated, unpatched runtime sources. It changes
-opt-in diagnostic fields, not memory writes or execution. Keep all source changes
+Apply these patches only to freshly regenerated sources, in the order above.
+The trace patch adds opt-in diagnostics; the options patches intentionally alter
+new-game initialization when requested by the host. Keep all source changes
 reviewable; none of these commands commits or pushes anything.
 
 ## Player options
@@ -62,3 +64,5 @@ reviewable; none of these commands commits or pushes anything.
 Frontend display shaders are independent of generated game code; see `app/src/display.ts`.
 
 [2× sprite replacements](sprite-replacements.md) explains the independent HD compositor and authoring format.
+
+[Level select](level-select.md) records the scene directory, startup hooks, and validation.

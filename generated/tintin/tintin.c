@@ -12,6 +12,28 @@ int tintin_set_initial_lives(uint8_t lives) {
     return 1;
 }
 
+/* One-shot host request, consumed after the original title/menu path. */
+static uint8_t start_scene = 255;
+int tintin_request_start_scene(uint8_t scene) {
+    if (scene > 30 && scene != 255) return 0;
+    start_scene = scene;
+    return 1;
+}
+int tintin_start_scene_pending(void) { return start_scene != 255; }
+uint8_t tintin_apply_start_scene(GBContext *ctx, uint8_t original) {
+    if (start_scene == 255) return original;
+    uint8_t scene = start_scene;
+    ctx->hram[0x68] = scene; /* FFE8: scene index, before normal initialization. */
+    return scene;
+}
+
+uint8_t tintin_scene_intro_previous(uint8_t original) {
+    if (start_scene == 255) return original;
+    uint8_t scene = start_scene;
+    start_scene = 255;
+    return scene; /* DFCA == FFE8 skips only the chapter introduction. */
+}
+
 /* Bank dispatch - routes calls to the correct bank function */
 void tintin_dispatch_00(GBContext* ctx, uint16_t addr, uint16_t bank);
 void tintin_dispatch_01(GBContext* ctx, uint16_t addr, uint16_t bank);

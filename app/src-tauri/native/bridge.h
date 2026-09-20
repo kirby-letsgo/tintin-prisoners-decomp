@@ -7,6 +7,7 @@
 int tt_load(const uint8_t *rom, size_t len);
 void tt_close(void);
 void tt_apply_lives(uint8_t lives);
+int tt_start_level(uint8_t scene);
 size_t tt_tick(uint8_t pressed, uint8_t *packet, size_t capacity);
 size_t tt_hd_frame(uint8_t *out, size_t capacity);
 

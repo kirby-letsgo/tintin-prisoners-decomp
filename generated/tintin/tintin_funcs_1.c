@@ -26057,6 +26057,7 @@ loc_0a55:
 pc_0a58:
     /* 0a58 */     gb_tick(ctx, 11);
     ctx->a = gb_read8(ctx, GB_HRAM_BASE + 0x68);
+    ctx->a = tintin_apply_start_scene(ctx, ctx->a);
     gb_tick(ctx, 1);
     ctx->pc = 0xa5a;
     if (gbrt_generated_safepoint(ctx)) return;
@@ -26078,6 +26079,7 @@ loc_0a57:
     /* LDH A,($FF00+$e8) */
     /* 0a58 */     gb_tick(ctx, 11);
     ctx->a = gb_read8(ctx, GB_HRAM_BASE + 0x68);
+    ctx->a = tintin_apply_start_scene(ctx, ctx->a);
     gb_tick(ctx, 1);
     ctx->pc = 0xa5a;
     if (gbrt_generated_safepoint(ctx)) return;
@@ -26099,7 +26101,7 @@ loc_0a5b:
 loc_0a5e:
     /* LD ($dfca),A */
     /* 0a5e */     gb_tick(ctx, 15);
-    gb_write8(ctx, GB_WRAMX_BASE + 0x0fca, ctx->a);
+    gb_write8(ctx, GB_WRAMX_BASE + 0x0fca, tintin_scene_intro_previous(ctx->a));
     gb_tick(ctx, 1);
     ctx->pc = 0xa61;
     if (gbrt_generated_safepoint(ctx)) return;

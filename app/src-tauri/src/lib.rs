@@ -21,6 +21,7 @@ static CORE: Mutex<bool> = Mutex::new(false);
 extern "C" {
     fn tt_load(rom: *const u8, len: usize) -> i32;
     fn tt_close();
+    fn tt_start_level(scene: u8) -> i32;
     fn tt_sprites_load(data: *const u8, length: usize) -> i32;
     fn tt_sprites_active() -> i32;
     fn tt_sprites_clear();
@@ -153,6 +154,39 @@ fn load_recent(app: tauri::AppHandle) -> Result<String, String> {
         .map_err(|_| "The last ROM is unavailable. Please choose it again.")?;
     load_bytes(&app, &bytes)
 }
+#[tauri::command]
+async fn start_level(app: tauri::AppHandle, scene: u8) -> Result<(), String> {
+    if scene > 30 {
+        return Err("Choose a level from the list.".into());
+    }
+    tauri::async_runtime::spawn_blocking(move || {
+        let dir = data_dir(&app)?;
+        let mut loaded = CORE.lock().map_err(|_| "Game state unavailable")?;
+        let was_loaded = *loaded;
+        if was_loaded {
+            save_to(&dir.join("auto.state"))?;
+        } else {
+            let bytes =
+                std::fs::read(dir.join("last-rom.gbc")).map_err(|_| "Choose your ROM first.")?;
+            validate_rom(&bytes)?;
+            if unsafe { tt_load(bytes.as_ptr(), bytes.len()) } == 0 {
+                return Err("Could not initialize the game.".into());
+            }
+            *loaded = true;
+        }
+        if unsafe { tt_start_level(scene) } == 0 {
+            if !was_loaded {
+                unsafe { tt_close() };
+                *loaded = false;
+            }
+            return Err("Could not start this level. Your previous progress is preserved.".into());
+        }
+        Ok(())
+    })
+    .await
+    .map_err(|error| error.to_string())?
+}
+
 #[tauri::command]
 async fn tick(buttons: u8) -> Result<Response, String> {
     let loaded = CORE.lock().map_err(|_| "Game state unavailable")?;
@@ -318,6 +352,7 @@ pub fn run() {
             set_starting_lives,
             load_rom,
             load_recent,
+            start_level,
             recent_available,
             tick,
             save_game,

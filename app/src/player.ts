@@ -12,6 +12,7 @@ export type PlayerState = {
   muted: boolean;
   spritePack: boolean;
   startingLives: number;
+  selectedLevel: number;
   displayMode: DisplayMode;
   shadersSupported: boolean;
   message: string;
@@ -25,6 +26,7 @@ export const initialState: PlayerState = {
   muted: false,
   spritePack: false,
   startingLives: 0,
+  selectedLevel: 0,
   displayMode: "original",
   shadersSupported: true,
   message: "",
@@ -235,7 +237,36 @@ export class Player {
     if (!this.state.busy)
       await (this.state.playing ? this.pause() : this.resume());
   }
-  async choose() {
+  selectLevel(selectedLevel: number) {
+    if (!this.state.busy && Number.isInteger(selectedLevel) && selectedLevel >= 0 && selectedLevel <= 30)
+      this.update({ selectedLevel });
+  }
+  async startLevel() {
+    if (this.state.busy) return;
+    if (!this.state.recent) { await this.choose(this.state.selectedLevel); return; }
+    await this.pause();
+    this.update({ busy: true, message: "Starting level…", error: false });
+    try {
+      await this.ensureAudio();
+      await invoke("set_starting_lives", { lives: this.state.startingLives, applyCurrent: false });
+      await invoke("start_level", { scene: this.state.selectedLevel });
+      this.update({ loaded: true, busy: false, message: "", error: false });
+      await this.resume();
+    } catch (error) {
+      this.update({ busy: false, message: String(error), error: true });
+    }
+  }
+  async mainMenu() {
+    if (this.state.busy) return;
+    await this.pause();
+    this.update({ busy: true });
+    try {
+      await invoke("save_game", { automatic: true });
+      this.update({ loaded: false, recent: true, message: "", error: false });
+    } catch (error) { this.message(String(error), true); }
+    finally { this.update({ busy: false }); }
+  }
+  async choose(level?: number) {
     if (this.state.busy) return;
     const wasPlaying = this.state.playing;
     await this.pause();
@@ -264,17 +295,22 @@ export class Player {
       const bytes = await readFile(selected);
       await invoke("set_starting_lives", { lives: this.state.startingLives, applyCurrent: false });
       const warning = await invoke<string>("load_rom", bytes);
+      this.update({ recent: true });
       try {
         localStorage.setItem("last-rom-location", selected);
       } catch {}
+      if (level !== undefined) {
+        this.update({ message: "Starting level…" });
+        await invoke("start_level", { scene: level });
+      }
       this.update({
         loaded: true,
         recent: true,
         busy: false,
-        message: warning,
-        error: !!warning,
+        message: level === undefined ? warning : "",
+        error: level === undefined && !!warning,
       });
-      if (!warning) await this.resume();
+      if (level !== undefined || !warning) await this.resume();
     } catch (error) {
       this.update({ busy: false, message: String(error), error: true });
       if (wasPlaying) await this.resume();

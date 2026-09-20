@@ -3,6 +3,7 @@
 #include "tintin.h"
 #include "gbrt.h"
 #include <string.h>
+#include <stdlib.h>
 
 /* All entry points are serialized by the Rust mutex. No SDL window or embedded ROM. */
 uint8_t g_joypad_buttons = 0xff;
@@ -46,6 +47,7 @@ static void capture_graphics(GBContext *ctx) {
     }
     graphics_ready = 1;
 }
+uint8_t tt_debug_scene(void) { return game ? game->hram[0x68] : 255; }
 uint8_t tt_debug_lives(void) { return game ? game->wram[0x1f87] : 0; }
 size_t tt_graphics_snapshot(uint8_t *out, size_t capacity) {
     if (!game || !graphics_ready || capacity < sizeof(graphics)) return 0;
@@ -129,6 +131,39 @@ size_t tt_tick(uint8_t pressed, uint8_t *packet, size_t capacity) {
         packet[9 + TT_PIXELS + i * 2] = (uint8_t)((uint16_t)pcm[i] >> 8);
     }
     return 8 + TT_PIXELS + samples * 4;
+}
+
+/* Start on a fresh context and run the unmodified boot/menu sequence. Roll back
+   completely on failure; never jump into a level with a previous level's RAM. */
+int tt_start_level(uint8_t scene) {
+    if (!game || scene > 30) return 0;
+    GBContext *previous = game;
+    game = NULL;
+    if (!tt_load(previous->rom, previous->rom_size)) { game = previous; return 0; }
+    tintin_request_start_scene(scene);
+    uint8_t *packet = malloc(TT_PACKET_MAX);
+    unsigned settled = 0;
+    int ok = 0;
+    if (packet) for (unsigned tick = 0; tick < 5000; ++tick) {
+        uint64_t frame = game->completed_frames;
+        uint8_t buttons = 0;
+        if (tintin_start_scene_pending()) {
+            if ((frame >= 1250 && frame < 1260) || (frame >= 2000 && frame < 2010)) buttons = 16;
+            else if ((frame >= 1600 && frame < 1610) || (frame >= 2400 && frame < 2410)) buttons = 128;
+        }
+        if (!tt_tick(buttons, packet, TT_PACKET_MAX)) break;
+        if (!tintin_start_scene_pending() && ++settled >= 180) {
+            ok = game->hram[0x68] == scene;
+            break;
+        }
+    }
+    free(packet);
+    tintin_request_start_scene(255);
+    if (ok) gb_context_destroy(previous);
+    else { gb_context_destroy(game); game = previous; tt_sprites_reset(); }
+    g_joypad_buttons = g_joypad_dpad = 0xff;
+    samples = 0;
+    return ok;
 }
 
 int tt_save(const char *path) { return game && gb_context_save_state_file(game, path); }

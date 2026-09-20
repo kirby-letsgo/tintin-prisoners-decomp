@@ -1,0 +1,291 @@
+{
+  "rom_sha256": "4c859ad08f74bcc004f01a69a7d380cdcdea79eb731a09f935337921096e4c20",
+  "directory": "06:471C",
+  "record_size": 10,
+  "selectable_scenes": 31,
+  "excluded_ending": 31,
+  "scenes": [
+    {
+      "id": 0,
+      "code": "MUS5",
+      "label": "01 \u00b7 Museum \u00b7 opening",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "97ac73000df84a74b1532306cfe6844ade9c2cf166653af32a369c9d7b9362c0"
+    },
+    {
+      "id": 1,
+      "code": "MUSE",
+      "label": "02 \u00b7 Museum \u00b7 room 1",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "cbfd3feaca4bdf13cba7ae162e8505e589feb1826c1be455621dde45ba595773"
+    },
+    {
+      "id": 2,
+      "code": "MUS2",
+      "label": "03 \u00b7 Museum \u00b7 room 2",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "3d38a4152eb5cb5c353d5dd9f016ca4e0f948df0d764c3f0f822b6e878b5f5f5"
+    },
+    {
+      "id": 3,
+      "code": "MUS3",
+      "label": "04 \u00b7 Museum \u00b7 room 3",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "19fbb3f1c629df521f9ad04745375bdfacec9a51d3ad12e508b6ddb72dab847f"
+    },
+    {
+      "id": 4,
+      "code": "MUS4",
+      "label": "05 \u00b7 Museum \u00b7 room 4",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "943b5bc0987f58927eb611d9e4be91c60a0df62d8a17fb7f28521e646120c462"
+    },
+    {
+      "id": 5,
+      "code": "ALMA",
+      "label": "06 \u00b7 Warehouse",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "abb682d9bb34b9b735239b81d76815889f73c06243be62790ab1859fd69b5457"
+    },
+    {
+      "id": 6,
+      "code": "BOL1",
+      "label": "07 \u00b7 Mansion \u00b7 room 1",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "f365fe96e26387061177ca4c78df5da97d3bc18ba6d1cdb155dc6d328907e940"
+    },
+    {
+      "id": 7,
+      "code": "BOL2",
+      "label": "08 \u00b7 Mansion \u00b7 room 2",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "0dab90027e0f4c5596c751df5481050dc9ce46da93136072522a05f714038895"
+    },
+    {
+      "id": 8,
+      "code": "BOL3",
+      "label": "09 \u00b7 Mansion \u00b7 room 3",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "77bf1ca82f4eeea158347fd56632e4d31815794e0dfef5cd89ab4017425d8a67"
+    },
+    {
+      "id": 9,
+      "code": "BOL4",
+      "label": "10 \u00b7 Mansion \u00b7 room 4",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "d82e71fc853cf0c83f041acb812cbba0f16a4cdda1947ac3726bdbc8db358da5"
+    },
+    {
+      "id": 10,
+      "code": "DESA",
+      "label": "11 \u00b7 Grounds",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "d53ecd875017b6c938e878f43225535567012fa458cc0250337602a0be8cf854"
+    },
+    {
+      "id": 11,
+      "code": "ROAD",
+      "label": "12 \u00b7 Car chase",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "ae1208f6637a48e9f67f43d2cdd3e5cd09bad46ec382f8854f74c86d2487dabe"
+    },
+    {
+      "id": 12,
+      "code": "PUER",
+      "label": "13 \u00b7 Port \u00b7 area 1",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "c50c324f189cf9fe5cf19f3f5fab0ac83e9505142a43d2b2b261c1b444bac21e"
+    },
+    {
+      "id": 13,
+      "code": "PUE2",
+      "label": "14 \u00b7 Port \u00b7 area 2",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "6907a9578741c857960befb47b2d46bf8bb7a18739ca707c35ea8cb11d012350"
+    },
+    {
+      "id": 14,
+      "code": "PACH",
+      "label": "15 \u00b7 Ship \u00b7 area 1",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "fc5d03280d8d7b8923cd9e0e389f14d9c6f596561d3edbab5497b10d5c912bcb"
+    },
+    {
+      "id": 15,
+      "code": "PAC2",
+      "label": "16 \u00b7 Ship \u00b7 area 2",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "7707021fad1a940bc63effd4ca10919c381a06966d65d1ca06ea8074b39cdf09"
+    },
+    {
+      "id": 16,
+      "code": "FPAC",
+      "label": "17 \u00b7 Ship \u00b7 cabin",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "b960cd5635cbdd3a798db1bd8429f6f985d26dd6d36e67a9f8f2d9328ec72622"
+    },
+    {
+      "id": 17,
+      "code": "JAUG",
+      "label": "18 \u00b7 Town \u00b7 area 1",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "fe380df5e78a16e316006b3da19e4caff043f44e67b23c0282dd76e178bbadd1"
+    },
+    {
+      "id": 18,
+      "code": "JAU2",
+      "label": "19 \u00b7 Town \u00b7 area 2",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "9f1ddaba9f5707a2215168abb8464796a5f6c590027af79818395a82dcbbe94a"
+    },
+    {
+      "id": 19,
+      "code": "JAU3",
+      "label": "20 \u00b7 Town \u00b7 area 3",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "4ef9f2baf678bc9a2878d6c3f356a85520f64bf8369f4b6905c43cfafcaefffe"
+    },
+    {
+      "id": 20,
+      "code": "LIBE",
+      "label": "21 \u00b7 Rescue",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "aecc40f8c4539a25f0ee90806a069f4037d8ae6a7a8442d02d4c91de8c58a9b6"
+    },
+    {
+      "id": 21,
+      "code": "COND",
+      "label": "22 \u00b7 Condor",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "b70f570e68636e1377af0b4b3fc5881ee7ad8b83c5b85db851470e0694d235d4"
+    },
+    {
+      "id": 22,
+      "code": "SNOW",
+      "label": "23 \u00b7 Snow",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "c5b00b2b4a6fb8079741551147df24466564905df6eccef8c876ec17b5ab8976"
+    },
+    {
+      "id": 23,
+      "code": "RIO",
+      "label": "24 \u00b7 River",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "c94c9026af7f7c82c20987f3f9df6a09d49ab0b3ce93417935c11b84e2b8e6c4"
+    },
+    {
+      "id": 24,
+      "code": "CASC",
+      "label": "25 \u00b7 Waterfall",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "cfba4ae052dcaa0120f41627ccf02aed3962a4ff855dee0aa9be4b90e33f2517"
+    },
+    {
+      "id": 25,
+      "code": "PIED",
+      "label": "26 \u00b7 Caves \u00b7 area 1",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "0bd7ca4228144586afddc62d030c9cc67ae23cbd9531fa962879dc8c1c8cb40c"
+    },
+    {
+      "id": 26,
+      "code": "PIE2",
+      "label": "27 \u00b7 Caves \u00b7 area 2",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "0c4a9363647005c5ed4d53a08e5bed8511f5f367fc8c104707e23382a5ef2c9d"
+    },
+    {
+      "id": 27,
+      "code": "PIE3",
+      "label": "28 \u00b7 Caves \u00b7 area 3",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "78f839f32d4741ffd94ae4fa0100f9afb2778aa9eda078ec8e1407574866fdf7"
+    },
+    {
+      "id": 28,
+      "code": "PIE4",
+      "label": "29 \u00b7 Caves \u00b7 area 4",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "7dc5ca31cf6dde0dee78c804c810143c8d8d5d75d95c19bf6c9a0fb4f9831a81"
+    },
+    {
+      "id": 29,
+      "code": "PUZZ",
+      "label": "30 \u00b7 Eclipse puzzle",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "2ba8774f8d3689dd78f9437ad05a99f52d8551314e4a9225c8545cb9c82c07d5"
+    },
+    {
+      "id": 30,
+      "code": "ECLI",
+      "label": "31 \u00b7 Temple",
+      "verified_starting_lives": 9,
+      "invalid_selection_rejected": true,
+      "save_restore_verified": true,
+      "frame_sha256": "d7cbf462d6d3405825d427685d95150cc279715dd2aeeec54204ab634a374c8f"
+    }
+  ],
+  "normal_start_and_lives_regression": "passed",
+  "frontend": "Production build and mocked browser launch, home return, failure and ROM-picker cancellation passed",
+  "limitations": "Verifies entry and save restoration, not completion of every level or every inter-level transition."
+}

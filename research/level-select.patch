@@ -1,0 +1,48 @@
+diff --git a/generated/tintin/tintin.c b/generated/tintin/tintin.c
+index bdc646a..b3d8af9 100644
+--- a/generated/tintin/tintin.c
++++ b/generated/tintin/tintin.c
+@@ -14,0 +15,22 @@ int tintin_set_initial_lives(uint8_t lives) {
++/* One-shot host request, consumed after the original title/menu path. */
++static uint8_t start_scene = 255;
++int tintin_request_start_scene(uint8_t scene) {
++    if (scene > 30 && scene != 255) return 0;
++    start_scene = scene;
++    return 1;
++}
++int tintin_start_scene_pending(void) { return start_scene != 255; }
++uint8_t tintin_apply_start_scene(GBContext *ctx, uint8_t original) {
++    if (start_scene == 255) return original;
++    uint8_t scene = start_scene;
++    ctx->hram[0x68] = scene; /* FFE8: scene index, before normal initialization. */
++    return scene;
++}
++
++uint8_t tintin_scene_intro_previous(uint8_t original) {
++    if (start_scene == 255) return original;
++    uint8_t scene = start_scene;
++    start_scene = 255;
++    return scene; /* DFCA == FFE8 skips only the chapter introduction. */
++}
++
+diff --git a/generated/tintin/tintin.h b/generated/tintin/tintin.h
+index 1727fd6..91b9d9f 100644
+--- a/generated/tintin/tintin.h
++++ b/generated/tintin/tintin.h
+@@ -10,0 +11,5 @@ int tintin_set_initial_lives(uint8_t lives);
++int tintin_request_start_scene(uint8_t scene);
++int tintin_start_scene_pending(void);
++uint8_t tintin_apply_start_scene(GBContext *ctx, uint8_t original);
++uint8_t tintin_scene_intro_previous(uint8_t original);
++
+diff --git a/generated/tintin/tintin_funcs_1.c b/generated/tintin/tintin_funcs_1.c
+index a0d3ee7..768ebb1 100644
+--- a/generated/tintin/tintin_funcs_1.c
++++ b/generated/tintin/tintin_funcs_1.c
+@@ -26059,0 +26060 @@ pc_0a58:
++    ctx->a = tintin_apply_start_scene(ctx, ctx->a);
+@@ -26080,0 +26082 @@ loc_0a57:
++    ctx->a = tintin_apply_start_scene(ctx, ctx->a);
+@@ -26102 +26104 @@ loc_0a5e:
+-    gb_write8(ctx, GB_WRAMX_BASE + 0x0fca, ctx->a);
++    gb_write8(ctx, GB_WRAMX_BASE + 0x0fca, tintin_scene_intro_previous(ctx->a));

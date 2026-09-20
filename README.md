@@ -86,3 +86,16 @@ Reopening or restoring a save keeps its saved lives; Game default affects only n
 resulting `.tintinsprites` file. The app remembers the pack; unmatched graphics
 fall back to the originals. See `assets/replacements/README.md` for the workflow
 and the opening-scene coverage of the starter sheet.
+
+### Level select
+
+Choose a scene from **Level select** on the main screen, then **Start selected
+level**. All 31 playable scene entries are available, including alternate rooms
+and the car, snow, and puzzle stages. Your ROM is still required. Chapter
+introductions are skipped; dialogue inside levels remains. Starts use your lives
+setting and a fresh game state.
+
+During play, open the pause menu and choose **Main menu / level select** to return.
+Current progress is saved first; **Continue last game** resumes it. A selected
+level becomes the active run for subsequent autosaves. Manual saves remain separate.
+See [level-loading research](research/level-select.md).

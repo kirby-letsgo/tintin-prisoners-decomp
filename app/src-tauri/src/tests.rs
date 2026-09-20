@@ -157,8 +157,81 @@ mod asset_capture {
     use crate::*;
     extern "C" {
         fn tt_debug_lives() -> u8;
+        fn tt_debug_scene() -> u8;
         fn tt_graphics_snapshot(out: *mut u8, capacity: usize) -> usize;
     }
+    #[test]
+    #[ignore = "local ROM required; starts all 31 playable scenes"]
+    fn level_select_route() {
+        let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..");
+        let rom_path = std::fs::read_dir(root.join("rom"))
+            .unwrap()
+            .filter_map(Result::ok)
+            .map(|entry| entry.path())
+            .find(|path| path.extension().is_some_and(|ext| ext == "gbc"))
+            .unwrap();
+        let rom = std::fs::read(rom_path).unwrap();
+        validate_rom(&rom).unwrap();
+        let _guard = CORE.lock().unwrap();
+        unsafe {
+            tt_close();
+            assert_eq!(tt_start_level(0), 0, "No ROM loaded");
+            assert_eq!(tintin_set_initial_lives(9), 1);
+            assert_eq!(tt_load(rom.as_ptr(), rom.len()), 1);
+        }
+        // Optional scene filter lets independent test processes validate scenes
+        // concurrently without sharing the runtime's process-global core.
+        let scenes: Vec<u8> = match std::env::var("TT_LEVEL_SCENE") {
+            Ok(value) => {
+                let scene: u8 = value.parse().unwrap();
+                assert!(scene < 31);
+                vec![scene]
+            }
+            Err(_) => (0..31).collect(),
+        };
+        let dir = root
+            .join("logs/level-select-test")
+            .join(std::process::id().to_string());
+        std::fs::create_dir_all(&dir).unwrap();
+        let checkpoint = dir.join("checkpoint.state");
+        let mut packet = vec![0; PACKET_MAX];
+        for scene in scenes {
+            assert_eq!(
+                unsafe { tt_start_level(scene) },
+                1,
+                "Scene {scene} failed to start"
+            );
+            assert_eq!(unsafe { tt_debug_scene() }, scene);
+            assert_eq!(unsafe { tt_debug_lives() }, 9);
+            assert!(unsafe { tt_tick(0, packet.as_mut_ptr(), packet.len()) } > 0);
+            let frame = u32::from_le_bytes(packet[4..8].try_into().unwrap());
+            assert!(frame > 1600 && frame < 5000);
+            let pixels = &packet[8..8 + 160 * 144 * 4];
+            assert!(
+                pixels.chunks_exact(4).any(|p| p != &pixels[..4]),
+                "Scene {scene} is blank"
+            );
+            std::fs::write(dir.join(format!("scene-{scene:02}.rgba")), pixels).unwrap();
+            save_to(&checkpoint).unwrap();
+            assert_eq!(
+                unsafe { tt_start_level(31) },
+                0,
+                "Ending must not be selectable"
+            );
+            assert_eq!(unsafe { tt_start_level(255) }, 0);
+            assert_eq!(unsafe { tt_debug_scene() }, scene);
+            assert!(unsafe { tt_tick(1, packet.as_mut_ptr(), packet.len()) } > 0);
+            restore_from(&checkpoint).unwrap();
+            assert_eq!(unsafe { tt_debug_scene() }, scene);
+            assert_eq!(unsafe { tt_debug_lives() }, 9);
+            println!("Verified scene {scene}: startup, frame, lives, invalid selection, restore");
+        }
+        unsafe {
+            tt_close();
+            tintin_set_initial_lives(0);
+        }
+    }
+
     #[test]
     #[ignore = "requires local ROM; verifies new-game lives and save isolation"]
     fn starting_lives_route() {

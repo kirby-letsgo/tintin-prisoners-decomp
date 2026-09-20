@@ -1,3 +1,4 @@
+import { levels } from "./levels";
 import { displayModes, type DisplayMode } from "./display";
 import { useState, type ReactNode, type PointerEvent } from "react";
 import { usePlayer } from "./usePlayer";
@@ -88,6 +89,18 @@ export default function App() {
               Continue last game
             </button>
           )}
+          <div className="mt-6 space-y-3">
+            <label className="flex items-center justify-between gap-3 text-sm text-zinc-300">
+              Level select
+              <select aria-label="Level select" className="secondary min-w-0 max-w-[70%]" value={state.selectedLevel}
+                disabled={state.busy} onChange={(event) => game?.selectLevel(Number(event.target.value))}>
+                {levels.map((level) => <option key={level.id} value={level.id}>{level.label}</option>)}
+              </select>
+            </label>
+            <button className="secondary w-full" disabled={state.busy} onClick={() => void game?.startLevel()}>
+              {state.busy ? "Opening…" : state.recent ? "Start selected level" : "Add ROM and start level"}
+            </button>
+          </div>
           <dl className="mt-9 space-y-4">
             {keyGuide.map(([label, buttons]) => (
               <div
@@ -159,6 +172,9 @@ export default function App() {
                 Import save
               </button>
             </div>
+            <button className="secondary w-full" disabled={state.busy} onClick={() => void game?.mainMenu()}>
+              Main menu / level select
+            </button>
             <button
               className="secondary w-full"
               disabled={state.busy}
