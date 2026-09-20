@@ -5,10 +5,11 @@ use std::{
     sync::Mutex,
 };
 use tauri::{
-    ipc::{InvokeBody, Request, Response},
+    ipc::{Request, Response},
     Emitter, Manager,
 };
 
+mod binary_ipc;
 mod saves;
 
 const ROM_LEN: usize = 1048576;
@@ -136,10 +137,8 @@ fn set_starting_lives(lives: u8, apply_current: bool) -> Result<(), String> {
 
 #[tauri::command]
 fn load_rom(app: tauri::AppHandle, request: Request<'_>) -> Result<String, String> {
-    let InvokeBody::Raw(bytes) = request.body() else {
-        return Err("Expected ROM bytes.".into());
-    };
-    load_bytes(&app, bytes)
+    let bytes = binary_ipc::decode(request.body(), ROM_LEN)?;
+    load_bytes(&app, &bytes)
 }
 #[tauri::command]
 fn recent_available(app: tauri::AppHandle) -> bool {
@@ -220,9 +219,7 @@ fn sprite_pack_active() -> Result<bool, String> {
 }
 #[tauri::command]
 fn load_sprite_pack(app: tauri::AppHandle, request: Request<'_>) -> Result<(), String> {
-    let InvokeBody::Raw(bytes) = request.body() else {
-        return Err("Expected sprite bytes.".into());
-    };
+    let bytes = binary_ipc::decode(request.body(), SPRITE_MAX)?;
     let _guard = CORE.lock().map_err(|_| "Game state unavailable")?;
     let dir = data_dir(&app)?;
     let path = dir.join("sprites.pack");
@@ -231,7 +228,7 @@ fn load_sprite_pack(app: tauri::AppHandle, request: Request<'_>) -> Result<(), S
         return Err("Invalid sprite pack. The previous pack is unchanged.".into());
     }
     let pending = dir.join("sprites.pending");
-    if let Err(error) = saves::stage(&pending, bytes)
+    if let Err(error) = saves::stage(&pending, &bytes)
         .and_then(|_| std::fs::rename(&pending, &path).map_err(|e| e.to_string()))
     {
         unsafe {
@@ -308,14 +305,12 @@ fn import_bytes(dir: &Path, bytes: &[u8]) -> Result<(), String> {
 }
 #[tauri::command]
 fn import_save(app: tauri::AppHandle, request: Request<'_>) -> Result<(), String> {
-    let InvokeBody::Raw(bytes) = request.body() else {
-        return Err("Expected save bytes.".into());
-    };
+    let bytes = binary_ipc::decode(request.body(), saves::MAX_FILE)?;
     let loaded = CORE.lock().map_err(|_| "Game state unavailable")?;
     if !*loaded {
         return Err("Open a ROM first.".into());
     }
-    import_bytes(&data_dir(&app)?, bytes)
+    import_bytes(&data_dir(&app)?, &bytes)
 }
 #[tauri::command]
 fn unload_rom(app: tauri::AppHandle) -> Result<(), String> {
