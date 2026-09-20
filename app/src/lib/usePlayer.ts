@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { Player, initialState, keyMap } from "./player";
+
 export function usePlayer() {
   const canvas = useRef<HTMLCanvasElement>(null);
   const player = useRef<Player | null>(null);
   const [state, setState] = useState(initialState);
+
   useEffect(() => {
     const game = new Player(canvas.current!, setState);
     player.current = game;
+
     const down = (event: KeyboardEvent) => {
       if (!game.state.loaded || game.state.busy) return;
       if ((event.metaKey || event.ctrlKey) && event.code === "KeyS") {

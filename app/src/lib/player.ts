@@ -68,9 +68,12 @@ export class Player {
     this.update({ displayMode });
     try {
       const lives = Number(localStorage.getItem("starting-lives"));
-      if (Number.isInteger(lives) && lives >= 0 && lives <= 9) this.update({ startingLives: lives });
+      if (Number.isInteger(lives) && lives >= 0 && lives <= 9)
+        this.update({ startingLives: lives });
     } catch {}
-    void invoke<boolean>("sprite_pack_active").then((spritePack) => this.update({ spritePack })).catch(() => {});
+    void invoke<boolean>("sprite_pack_active")
+      .then((spritePack) => this.update({ spritePack }))
+      .catch(() => {});
     void invoke<boolean>("recent_available")
       .then((recent) => this.update({ recent }))
       .catch(() => {});
@@ -84,38 +87,65 @@ export class Player {
   }
   async chooseSpritePack() {
     if (this.state.busy) return;
-    await this.pause(); this.update({ busy: true, message: "", error: false });
+    await this.pause();
+    this.update({ busy: true, message: "", error: false });
     try {
-      const path = await open({ multiple: false, directory: false, title: "Choose a 2× sprite pack",
-        filters: [{ name: "Tintin sprite pack", extensions: ["tintinsprites"] }] });
+      const path = await open({
+        multiple: false,
+        directory: false,
+        title: "Choose a 2× sprite pack",
+        filters: [
+          { name: "Tintin sprite pack", extensions: ["tintinsprites"] },
+        ],
+      });
       if (!path) return;
-      if ((await stat(path)).size > MAX_SPRITE_FILE) throw new Error("Sprite pack is too large.");
+      if ((await stat(path)).size > MAX_SPRITE_FILE)
+        throw new Error("Sprite pack is too large.");
       const binary = await compileSpritePack(await readFile(path));
       await invoke("load_sprite_pack", binary);
       this.update({ spritePack: true });
       this.message("2× sprites loaded. Unmatched graphics use the originals.");
-    } catch (error) { this.message(String(error), true); }
-    finally { this.update({ busy: false }); }
+    } catch (error) {
+      this.message(String(error), true);
+    } finally {
+      this.update({ busy: false });
+    }
   }
   async clearSpritePack() {
     if (this.state.busy) return;
     this.update({ busy: true });
-    try { await invoke("clear_sprite_pack"); this.update({ spritePack: false }); this.message("Original sprites restored."); }
-    catch (error) { this.message(String(error), true); }
-    finally { this.update({ busy: false }); }
+    try {
+      await invoke("clear_sprite_pack");
+      this.update({ spritePack: false });
+      this.message("Original sprites restored.");
+    } catch (error) {
+      this.message(String(error), true);
+    } finally {
+      this.update({ busy: false });
+    }
   }
   async setStartingLives(lives: number) {
     try {
       await invoke("set_starting_lives", { lives, applyCurrent: true });
       this.update({ startingLives: lives });
-      try { localStorage.setItem("starting-lives", String(lives)); } catch {}
-      this.message(lives === 0 ? "Game default applies to the next new game." : `Lives set to ${lives}.`);
-    } catch (error) { this.message(String(error), true); }
+      try {
+        localStorage.setItem("starting-lives", String(lives));
+      } catch {}
+      this.message(
+        lives === 0
+          ? "Game default applies to the next new game."
+          : `Lives set to ${lives}.`,
+      );
+    } catch (error) {
+      this.message(String(error), true);
+    }
   }
   setDisplayMode(displayMode: DisplayMode) {
     this.display.setMode(displayMode);
     this.update({ displayMode });
-    try { localStorage.setItem("display-mode", displayMode); } catch {}
+    try {
+      localStorage.setItem("display-mode", displayMode);
+    } catch {}
   }
   press(source: string, value: number) {
     if (this.state.playing) this.held.set(source, value);
@@ -194,7 +224,15 @@ export class Player {
       const hd = packet.byteLength === originalLength + 320 * 288 * 4;
       if (samples > 4096 || (!hd && packet.byteLength !== originalLength))
         throw new Error("Invalid game frame.");
-      this.display.render(new Uint8Array(packet, hd ? originalLength : 8, hd ? 320*288*4 : 160*144*4), hd ? 320 : 160, hd ? 288 : 144);
+      this.display.render(
+        new Uint8Array(
+          packet,
+          hd ? originalLength : 8,
+          hd ? 320 * 288 * 4 : 160 * 144 * 4,
+        ),
+        hd ? 320 : 160,
+        hd ? 288 : 144,
+      );
       this.queueAudio(packet, samples);
     } catch (error) {
       this.generation++;
@@ -244,12 +282,18 @@ export class Player {
   }
   async startLevel() {
     if (this.state.busy) return;
-    if (!this.state.recent) { await this.choose(this.state.selectedLevel); return; }
+    if (!this.state.recent) {
+      await this.choose(this.state.selectedLevel);
+      return;
+    }
     await this.pause();
     this.update({ busy: true, message: "Starting level…", error: false });
     try {
       await this.ensureAudio();
-      await invoke("set_starting_lives", { lives: this.state.startingLives, applyCurrent: false });
+      await invoke("set_starting_lives", {
+        lives: this.state.startingLives,
+        applyCurrent: false,
+      });
       await invoke("start_level", { scene: this.state.selectedLevel });
       this.update({ loaded: true, busy: false, message: "", error: false });
       await this.resume();
@@ -264,8 +308,11 @@ export class Player {
     try {
       await invoke("save_game", { automatic: true });
       this.update({ loaded: false, recent: true, message: "", error: false });
-    } catch (error) { this.message(String(error), true); }
-    finally { this.update({ busy: false }); }
+    } catch (error) {
+      this.message(String(error), true);
+    } finally {
+      this.update({ busy: false });
+    }
   }
   async choose(level?: number) {
     if (this.state.busy) return;
@@ -294,7 +341,10 @@ export class Player {
           "Choose the 1 MiB Europe edition of Tintin: Prisoners of the Sun.",
         );
       const bytes = await readFile(selected);
-      await invoke("set_starting_lives", { lives: this.state.startingLives, applyCurrent: false });
+      await invoke("set_starting_lives", {
+        lives: this.state.startingLives,
+        applyCurrent: false,
+      });
       const warning = await invoke<string>("load_rom", bytes);
       this.update({ recent: true });
       try {
@@ -330,7 +380,10 @@ export class Player {
     this.update({ busy: true, message: "", error: false });
     await this.ensureAudio();
     try {
-      await invoke("set_starting_lives", { lives: this.state.startingLives, applyCurrent: false });
+      await invoke("set_starting_lives", {
+        lives: this.state.startingLives,
+        applyCurrent: false,
+      });
       const warning = await invoke<string>("load_recent");
       this.update({
         loaded: true,

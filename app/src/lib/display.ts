@@ -5,11 +5,13 @@ export const displayModes = {
   lcd: "LCD grid",
   crt: "CRT scanlines",
 } as const;
+
 export type DisplayMode = keyof typeof displayModes;
 export function readDisplayMode(): DisplayMode {
   try {
     const saved = localStorage.getItem("display-mode");
-    if (saved && Object.hasOwn(displayModes, saved)) return saved as DisplayMode;
+    if (saved && Object.hasOwn(displayModes, saved))
+      return saved as DisplayMode;
   } catch {}
   return "original";
 }
@@ -56,7 +58,11 @@ export class GameDisplay {
   private observer: ResizeObserver;
   private disposed = false;
   constructor(private canvas: HTMLCanvasElement) {
-    this.gl = canvas.getContext("webgl", { alpha: false, antialias: false, depth: false });
+    this.gl = canvas.getContext("webgl", {
+      alpha: false,
+      antialias: false,
+      depth: false,
+    });
     if (this.gl) this.initialize();
     else this.context2d = canvas.getContext("2d", { alpha: false });
     canvas.addEventListener("webglcontextlost", this.lost);
@@ -64,9 +70,18 @@ export class GameDisplay {
     this.observer = new ResizeObserver(() => this.draw());
     this.observer.observe(canvas);
   }
-  get supported() { return !!this.gl; }
-  private lost = (event: Event) => { event.preventDefault(); };
-  private restored = () => { if (!this.disposed) { this.initialize(); this.draw(); } };
+  get supported() {
+    return !!this.gl;
+  }
+  private lost = (event: Event) => {
+    event.preventDefault();
+  };
+  private restored = () => {
+    if (!this.disposed) {
+      this.initialize();
+      this.draw();
+    }
+  };
   private initialize() {
     const gl = this.gl!;
     const compile = (type: number, source: string) => {
@@ -88,11 +103,16 @@ export class GameDisplay {
     gl.linkProgram(this.program);
     gl.deleteShader(vertex);
     gl.deleteShader(fragment);
-    if (!gl.getProgramParameter(this.program, gl.LINK_STATUS)) throw new Error("Display shader could not link.");
+    if (!gl.getProgramParameter(this.program, gl.LINK_STATUS))
+      throw new Error("Display shader could not link.");
     gl.useProgram(this.program);
     this.buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+    gl.bufferData(
+      gl.ARRAY_BUFFER,
+      new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
+      gl.STATIC_DRAW,
+    );
     const position = gl.getAttribLocation(this.program, "position");
     gl.enableVertexAttribArray(position);
     gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
@@ -100,17 +120,40 @@ export class GameDisplay {
     gl.bindTexture(gl.TEXTURE_2D, this.texture);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.frameWidth, this.frameHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, this.lastFrame);
-    this.textureWidth = this.frameWidth; this.textureHeight = this.frameHeight;
+    gl.texImage2D(
+      gl.TEXTURE_2D,
+      0,
+      gl.RGBA,
+      this.frameWidth,
+      this.frameHeight,
+      0,
+      gl.RGBA,
+      gl.UNSIGNED_BYTE,
+      this.lastFrame,
+    );
+    this.textureWidth = this.frameWidth;
+    this.textureHeight = this.frameHeight;
     gl.uniform1i(gl.getUniformLocation(this.program, "frame"), 0);
   }
-  setMode(mode: DisplayMode) { this.mode = mode; this.draw(); }
+  setMode(mode: DisplayMode) {
+    this.mode = mode;
+    this.draw();
+  }
   render(bytes: Uint8Array, width = 160, height = 144) {
-    if (!((width === 160 && height === 144) || (width === 320 && height === 288)) || bytes.length !== width*height*4)
+    if (
+      !(
+        (width === 160 && height === 144) ||
+        (width === 320 && height === 288)
+      ) ||
+      bytes.length !== width * height * 4
+    )
       throw new Error("Invalid display frame dimensions.");
-    if (this.lastFrame.length !== bytes.length) this.lastFrame = new Uint8Array(bytes.length);
-    this.frameWidth = width; this.frameHeight = height;
-    this.lastFrame.set(bytes); this.draw();
+    if (this.lastFrame.length !== bytes.length)
+      this.lastFrame = new Uint8Array(bytes.length);
+    this.frameWidth = width;
+    this.frameHeight = height;
+    this.lastFrame.set(bytes);
+    this.draw();
   }
   private draw() {
     if (this.disposed) return;
@@ -118,16 +161,34 @@ export class GameDisplay {
     if (!gl) {
       this.canvas.width = this.frameWidth;
       this.canvas.height = this.frameHeight;
-      this.context2d?.putImageData(new ImageData(new Uint8ClampedArray(this.lastFrame), this.frameWidth, this.frameHeight), 0, 0);
+      this.context2d?.putImageData(
+        new ImageData(
+          new Uint8ClampedArray(this.lastFrame),
+          this.frameWidth,
+          this.frameHeight,
+        ),
+        0,
+        0,
+      );
       return;
     }
     if (gl.isContextLost()) return;
     // Fit an exact 10:9 surface. Keep effects aligned with game pixels, not letterboxes.
     const rect = this.canvas.getBoundingClientRect();
-    const scale = Math.max(this.frameWidth / 160, Math.min(8, Math.ceil(Math.min(rect.width / 160, rect.height / 144) * devicePixelRatio)));
-    const width = 160 * scale, height = 144 * scale;
+    const scale = Math.max(
+      this.frameWidth / 160,
+      Math.min(
+        8,
+        Math.ceil(
+          Math.min(rect.width / 160, rect.height / 144) * devicePixelRatio,
+        ),
+      ),
+    );
+    const width = 160 * scale,
+      height = 144 * scale;
     if (this.canvas.width !== width || this.canvas.height !== height) {
-      this.canvas.width = width; this.canvas.height = height;
+      this.canvas.width = width;
+      this.canvas.height = height;
     }
     gl.viewport(0, 0, width, height);
     gl.useProgram(this.program);
@@ -135,13 +196,40 @@ export class GameDisplay {
     const filter = this.mode === "smooth" ? gl.LINEAR : gl.NEAREST;
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, filter);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, filter);
-    if (this.textureWidth !== this.frameWidth || this.textureHeight !== this.frameHeight) {
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.frameWidth, this.frameHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, this.lastFrame);
-      this.textureWidth = this.frameWidth; this.textureHeight = this.frameHeight;
+    if (
+      this.textureWidth !== this.frameWidth ||
+      this.textureHeight !== this.frameHeight
+    ) {
+      gl.texImage2D(
+        gl.TEXTURE_2D,
+        0,
+        gl.RGBA,
+        this.frameWidth,
+        this.frameHeight,
+        0,
+        gl.RGBA,
+        gl.UNSIGNED_BYTE,
+        this.lastFrame,
+      );
+      this.textureWidth = this.frameWidth;
+      this.textureHeight = this.frameHeight;
     } else {
-      gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, this.frameWidth, this.frameHeight, gl.RGBA, gl.UNSIGNED_BYTE, this.lastFrame);
+      gl.texSubImage2D(
+        gl.TEXTURE_2D,
+        0,
+        0,
+        0,
+        this.frameWidth,
+        this.frameHeight,
+        gl.RGBA,
+        gl.UNSIGNED_BYTE,
+        this.lastFrame,
+      );
     }
-    gl.uniform1i(gl.getUniformLocation(this.program!, "effect"), ["original", "smooth", "lcd", "crt"].indexOf(this.mode));
+    gl.uniform1i(
+      gl.getUniformLocation(this.program!, "effect"),
+      ["original", "smooth", "lcd", "crt"].indexOf(this.mode),
+    );
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
   dispose() {
