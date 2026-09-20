@@ -48,6 +48,10 @@ jobs:
         run: |
           npm run build --prefix app
           cargo test --locked --manifest-path app/src-tauri/Cargo.toml
+      - name: Generate native macOS icon
+        run: |
+          npm --prefix app run tauri -- icon "$GITHUB_WORKSPACE/app/src-tauri/icons/icon.png" --output "$RUNNER_TEMP/tintin-icons"
+          cp "$RUNNER_TEMP/tintin-icons/icon.icns" app/src-tauri/icons/icon.icns
       - name: Build optimized macOS app
         env:
           APPLE_SIGNING_IDENTITY: '-'

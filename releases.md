@@ -70,3 +70,17 @@ workflow. npm and Cargo dependencies use their committed lockfiles. Android's
 Tauri CLI uses Cargo.lock; commit any intentional dependency updates explicitly.
 CI unit tests cover durable-save failures without needing a ROM. Full native game
 replay tests remain local because they require the user's ROM.
+
+## App icon
+
+`app/src-tauri/icons/icon.png` is the 1024×1024 RGBA master artwork. macOS uses
+`icon.icns` explicitly: relying on the bundler to convert the single large PNG
+failed with `No matching IconType`. CI regenerates the ICNS from the master on
+every macOS build, so changing the PNG updates the release automatically.
+The checked-in ICNS also supports local builds. To refresh it locally:
+
+```sh
+# From app/:
+npm run tauri -- icon src-tauri/icons/icon.png --output ../logs/icon-build
+cp ../logs/icon-build/icon.icns src-tauri/icons/icon.icns
+```
