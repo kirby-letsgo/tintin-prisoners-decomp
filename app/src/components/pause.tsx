@@ -92,24 +92,6 @@ export const Pause = ({
               </p>
             )}
             <button
-              className={`${menu.secondary} w-full`}
-              disabled={state.busy}
-              onClick={() => void game?.chooseSpritePack()}
-            >
-              {state.spritePack
-                ? "Change 2× sprite pack"
-                : "Load 2× sprite pack"}
-            </button>
-            {state.spritePack && (
-              <button
-                className={`${menu.note} min-h-11 w-full py-2 enabled:hover:bg-gb-hover`}
-                disabled={state.busy}
-                onClick={() => void game?.clearSpritePack()}
-              >
-                Use original sprites
-              </button>
-            )}
-            <button
               className={`${menu.note} min-h-11 w-full py-2 enabled:hover:bg-gb-hover`}
               onClick={() => void game?.toggleSound()}
             >

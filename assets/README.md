@@ -67,9 +67,9 @@ can be re-encoded to exactly their original bytes.
 
 The next implementation step is to confirm the character's assembly/animation
 records and tile upload/decompression routines, then add an explicit replacement
-mapping with an original-byte/hash check. For high-resolution artwork, the player now supports a separate 2× replacement
-renderer. See [the spritesheet workflow](replacements/README.md); the original
-2bpp extraction/encoding pipeline still preserves GBC dimensions.
+mapping with an original-byte/hash check. The player now uses original graphics only. The earlier
+[2× spritesheet experiment](replacements/README.md) is retained for research,
+but is no longer available in the app.
 
 ## Where the code lives
 

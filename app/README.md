@@ -37,7 +37,7 @@ menu button. There are no function-key shortcuts.
 
 ## ROM and saves
 
-Only the exact Europe En/Fr/De revision recorded in the root README is accepted.
+Only the exact Europe En/Fr/De revision recorded in DEVELOPMENT.md is accepted.
 The SHA-256 check happens in Rust before the C core sees the ROM. No raw ROM data
 is embedded in the application: the build explicitly excludes `tintin_rom.c` and
 adapts the generated initialization to use the selected ROM.
@@ -75,7 +75,7 @@ before uninstalling the app.
 
 ## Architecture and tests
 
-`src/player.ts` owns the single-flight frame/audio loop. React renders the picker,
+`src/lib/player.ts` owns the single-flight frame/audio loop. React renders the picker,
 key guide, menu, and touch controls. The native core is the same generated Tintin
 C and Game Boy runtime used by the SDL build. Rust serializes native entry points;
 a small C bridge supplies pixels, PCM audio, input, and save-state access. SDL and
@@ -94,3 +94,13 @@ determinism, progression to gameplay, frame pacing, PCM output, save/load replay
 and malformed-state rejection. It writes a diagnostic PPM frame to `../logs/`.
 This remains generated C with interpreter fallback; it is not a semantic rewrite
 of the game or a whole-game compatibility guarantee.
+
+## Controllers
+
+`src/lib/controller.ts` polls the standard Gamepad API layout, separates app-menu
+buttons from game input, and supplies DOM menu navigation. Mapping and connection
+regressions run with `npm run test:display` alongside the viewport tests. Physical
+controller testing on both platforms is still needed. See the root README for mappings.
+
+The shipped player no longer loads replacement sprite packs or builds the HD
+compositor. Old private `sprites.pack` files are ignored; saves remain unchanged.

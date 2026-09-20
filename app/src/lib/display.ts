@@ -157,10 +157,7 @@ export class GameDisplay {
   }
   render(bytes: Uint8Array, width = 160, height = 144) {
     if (
-      !(
-        (width === 160 && height === 144) ||
-        (width === 320 && height === 288)
-      ) ||
+      (width !== 160 || height !== 144) ||
       bytes.length !== width * height * 4
     )
       throw new Error("Invalid display frame dimensions.");

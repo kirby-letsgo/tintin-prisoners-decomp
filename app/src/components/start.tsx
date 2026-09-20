@@ -112,7 +112,7 @@ export function StartMenu({
           ))}
         </dl>
         <p className="pt-3 text-xs leading-[1.7] text-gb-muted">
-          On phones, use the on-screen controls.
+          On phones, use the on-screen controls. Controllers: D-pad or left stick to move, bottom/right buttons for A/B, Start/Select, and left shoulder for the menu. In menus, up/down moves, left/right changes options, and the bottom button selects.
         </p>
       </details>
       {state.message && (

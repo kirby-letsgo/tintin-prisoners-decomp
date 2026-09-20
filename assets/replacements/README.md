@@ -1,3 +1,6 @@
+> Archived experiment: replacement packs are no longer supported by the player.
+> The files and tools here are retained as graphics research.
+
 # Edit Tintin's 2× sprites
 
 `tintin-2x.png` is the editable spritesheet. It contains ten captured standing and

@@ -1,3 +1,4 @@
+import { connectController } from "./controller";
 import { useEffect, useRef, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { Player, initialState, keyMap } from "./player";
@@ -10,6 +11,7 @@ export function usePlayer() {
   useEffect(() => {
     const game = new Player(canvas.current!, setState);
     player.current = game;
+    const disconnectController = connectController(game);
 
     const down = (event: KeyboardEvent) => {
       if (!game.state.loaded || game.state.busy) return;
@@ -62,6 +64,7 @@ export function usePlayer() {
       game.reportError(event.payload),
     );
     return () => {
+      disconnectController();
       clearInterval(auto);
       void unlisten.then((fn) => fn());
       window.removeEventListener("keydown", down);

@@ -56,7 +56,7 @@ export const MobileControls = ({
           {state.message}
         </p>
       )}
-      <div className="mobile-controls">
+      <div className={`mobile-controls ${state.controllerConnected ? "!hidden" : ""}`}>
         <div className="dpad">
           <TouchButton game={game} value={4} className="up" label="Up">
             ↑

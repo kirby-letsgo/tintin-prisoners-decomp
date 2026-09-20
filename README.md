@@ -1,101 +1,83 @@
-# Tintin: Prisoners of the Sun — C recompilation
+# Tintin: Prisoners of the Sun
 
-Local native build of the Europe (English/French/German) Game Boy Color ROM using
-[GB Recompiled](https://github.com/arcanite24/gb-recompiled).
-This is generated machine-level C plus a Game Boy runtime, not a recovered original
-source tree or a completed semantic decompilation. Unknown execution targets can
-fall back to the runtime interpreter.
+Play the Game Boy Color game on **macOS (Apple Silicon)** and **Android (ARM64)**,
+with keyboard, touch or controller input, save states, and optional display effects.
 
-## Build and play
+**[Download the latest DMG or APK](https://github.com/kirby-letsgo/tintin-prisoners-decomp/releases/tag/rolling)**
 
-Requires Python 3, Git, CMake 3.20+, Ninja, SDL2 development files, and a C11/C++20
-compiler. On macOS the dependencies can be installed with `brew install cmake ninja sdl2`.
-Place the original ROM in `rom/`, then run:
+This is an unofficial fan project. You need your own **Europe (English/French/German)
+Game Boy Color ROM**, exactly 1 MiB. The game is not included in the download.
 
-```sh
-make all          # verify ROM, fetch/build pinned tool, generate C, build, boot smoke
-make run          # launch the native executable
-```
+## Get started
 
-Existing builds can be launched with `make run`. Arrow keys move, Z is A, X is B,
-Enter is Start, Backspace is Select, and Escape opens settings.
+1. Download the **DMG** for your Mac or the **APK** for your Android phone.
+2. On macOS, open the DMG and drag Tintin Player to Applications. On Android, open
+   the APK and allow installation from your browser or file manager if prompted.
+3. Launch the app, choose **Add a ROM**, and select your `.gbc` file.
 
-Individual steps: `make verify-rom`, `make bootstrap`, `make generate`, `make build`,
-`make smoke`, `make route`, `make differential`, `make test-tool`.
-Re-running generation overwrites the generated C; keep researched symbols,
-annotations, and future native replacements separately in version-controlled files.
+The app remembers the ROM on your device. Next time, choose **Continue** to resume.
+**Restart run** begins at the first level using your lives setting. **Level select**
+lets you jump to a main level; press **Play** to start there.
 
-## Layout
+## Controls
 
-- `tools/project.py`: reproducible commands and exact ROM/tool identity checks.
-- `.tools/gb-recompiled/`: pinned upstream checkout and tool build (ignored).
-- `generated/tintin/`: tracked C sources, runtime snapshot and licenses. The full
-  embedded ROM array and large analysis report remain ignored.
-- `build/tintin/tintin`: native executable (ignored).
-- `logs/`: build logs, captures, state dumps, and local saves (ignored).
-- `research/`: reviewed routine names, readable references and replay evidence.
+Phones show touch controls. A supported controller hides them while connected;
+disconnecting it pauses the game and restores the touch controls.
 
-The ROM is 1 MiB, 64 banks, CGB-only, MBC5 without cartridge RAM, revision 0.
-Its SHA-256 is `4c859ad08f74bcc004f01a69a7d380cdcdea79eb731a09f935337921096e4c20`.
-GB Recompiled is pinned at `9150f87d82fa98abcb6ea22329170463f9702eb8`.
+| Action | Keyboard | Controller (standard layout) |
+| --- | --- | --- |
+| Move | Arrow keys | D-pad or left stick |
+| Game Boy A | Z | Bottom face button (Xbox A / PlayStation cross) |
+| Game Boy B | X | Right face button (Xbox B / PlayStation circle) |
+| Game Start | Enter | Start / Menu / Options |
+| Game Select | Backspace | Back / View / Share |
+| App pause menu / resume | Esc | Left shoulder (LB / L1) |
+| Save state | ⌘S on Mac, Ctrl+S elsewhere | Use the pause menu |
+| Load state | ⌘L on Mac, Ctrl+L elsewhere | Use the pause menu |
+| Mute | M | Picture & sound in the pause menu |
 
-The default aggressive scan can decode data as instructions. Generated function
-counts are candidates, not a measure of recovered game logic. Differential tests
-compare generated execution to the same runtime's interpreter; independent emulator
-comparison and gameplay testing are still needed for a compatibility claim.
+Connect your controller over Bluetooth or USB, then press a button while the app
+is focused. Controllers must be recognised with the standard Gamepad layout.
+Hardware support depends on the device and its WebView; non-standard mappings are
+not currently supported.
 
-## Embedded app
+In menus, use **up/down** to move between controls, **left/right** to change a
+selected option, and the **bottom face button** to select. The **right face button**
+resumes from the pause menu. Use your phone or mouse for system file pickers.
 
-The `app/` directory contains a Tauri app using React, TypeScript, and Tailwind.
-It asks for the ROM, remembers it, embeds the game, and supports save states.
-Run `make app-install app-dev` after generating the C core. See
-[app/README.md](app/README.md) for macOS/Android builds and controls.
+## Saves
 
-## CI app packages
+Progress is saved automatically every 30 seconds, when returning to the main menu,
+and when closing or backgrounding the app. A force-stop may lose progress since
+the last autosave. The app keeps a backup and attempts recovery if a save is damaged.
 
-GitHub Actions builds optimized macOS and Android packages without a ROM. Successful
-`main` builds update the **Latest** rolling release with a DMG and APK. See
-[release builds](releases.md) and [tracked C core](app/core/README.md).
-The app has checksummed saves, previous-generation backups, and pause-menu export/import.
+- **Save state / Load state** gives you a separate manual checkpoint.
+- **Save files & ROM → Export save** writes a `.tintinsave` file you can keep elsewhere.
+- **Import save** restores an exported checkpoint. Export before uninstalling or
+  clearing app data. On Android, uninstalling removes local saves and the cached ROM.
 
-## Sprite study
+Continue opens the newest compatible automatic or manual save. Save transfer
+between macOS and Android has not yet been verified.
 
-`make sprites` captures the opening route and exports editable indexed PNGs,
-assembled character references, palettes and source-location candidates. Start with
-[the sprite workflow](assets/README.md) and [observations](assets/observations.md).
-Sprite PNGs, palettes, reference sheets and their manifest are tracked in
-`assets/extracted/`. Only raw capture intermediates remain ignored.
+## Picture and game options
 
-## Reading the game code
+Open the pause menu to change:
 
-Start with [the code guide](research/README.md) and the verified
-[actor tile-upload path](research/graphics.md). The named generated entry points
-keep original timing; the readable C reference explains the same data flow.
+- **Picture & sound:** original pixels, smoothing, LCD grid or CRT scanlines;
+  whole-pixel or fit-to-screen scaling; sound on/off.
+- **Game options:** original lives settings or 1–9 lives. Choosing a number sets
+  your current lives and starting lives for new runs. Game default affects new runs only.
 
-### Display and starting lives
+The player uses the original game graphics. Display effects do not change gameplay.
 
-Open the pause menu with Escape (or the phone menu button). Display offers
-Original pixels, Smooth, LCD grid and CRT scanlines; effects run in the frontend
-and the selection is remembered. Devices without WebGL retain the original
-Canvas renderer. Lives offers Game default (difficulty-dependent) or 1–9. Choosing
-a number changes the current game once and sets starting lives for new games.
-Reopening or restoring a save keeps its saved lives; Game default affects only new games.
+## Updates and help
 
-2× sprite packs can be loaded from the pause menu. Edit the single PNG in
-`assets/replacements/`, build it with `tools/sprite_pack.py`, and import the
-resulting `.tintinsprites` file. The app remembers the pack; unmatched graphics
-fall back to the originals. See `assets/replacements/README.md` for the workflow
-and the opening-scene coverage of the starter sheet.
+The **rolling release** is refreshed after successful builds from `main`.
+Install a newer package to update. Keep an exported save before reinstalling.
 
-### Level select
+If something goes wrong, [open an issue](https://github.com/kirby-letsgo/tintin-prisoners-decomp/issues)
+with your device, app build, and steps to reproduce it. For controller problems,
+include the controller model and whether it uses Bluetooth or USB. Do not attach ROMs.
 
-Choose a main level from **Level select** on the main screen, then **Start selected
-level**. The 16 entries each start at the first area; rooms and later areas progress
-normally. The car, snow, and puzzle stages have their own entries. Your ROM is still required. Chapter
-introductions are skipped; dialogue inside levels remains. Starts use your lives
-setting and a fresh game state.
-
-During play, open the pause menu and choose **Main menu / level select** to return.
-Current progress is saved first; **Continue last game** resumes it. A selected
-level becomes the active run for subsequent autosaves. Manual saves remain separate.
-See [level-loading research](research/level-select.md).
+For build instructions and code research, see [Development](DEVELOPMENT.md),
+[the app guide](app/README.md), and [release builds](releases.md).
