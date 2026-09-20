@@ -26,6 +26,7 @@ extern "C" {
     fn tt_sprites_clear();
     fn tt_hd_frame(out: *mut u8, capacity: usize) -> usize;
     fn tintin_set_initial_lives(lives: u8) -> i32;
+    fn tt_apply_lives(lives: u8);
     fn tt_tick(buttons: u8, packet: *mut u8, capacity: usize) -> usize;
     fn tt_save(path: *const std::ffi::c_char) -> i32;
     fn tt_validate(path: *const std::ffi::c_char) -> i32;
@@ -121,10 +122,13 @@ fn load_bytes(app: &tauri::AppHandle, bytes: &[u8]) -> Result<String, String> {
 }
 
 #[tauri::command]
-fn set_starting_lives(lives: u8) -> Result<(), String> {
+fn set_starting_lives(lives: u8, apply_current: bool) -> Result<(), String> {
     let _guard = CORE.lock().map_err(|_| "Game state unavailable")?;
     if unsafe { tintin_set_initial_lives(lives) } == 0 {
         return Err("Choose game default (0) or 1–9 starting lives.".into());
+    }
+    if apply_current {
+        unsafe { tt_apply_lives(lives) };
     }
     Ok(())
 }

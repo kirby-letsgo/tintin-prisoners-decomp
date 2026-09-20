@@ -172,14 +172,20 @@ export default function App() {
             {state.spritePack && <button className="w-full py-2 text-sm text-zinc-400" disabled={state.busy}
               onClick={() => void game?.clearSpritePack()}>Use original sprites</button>}
             <label className="flex items-center justify-between gap-3 text-sm text-zinc-300">
-              Starting lives
-              <select aria-label="Starting lives" className="secondary" value={state.startingLives}
+              Lives
+              <select aria-label="Lives" className="secondary" value={state.startingLives}
                 disabled={state.busy} onChange={(event) => void game?.setStartingLives(Number(event.target.value))}>
                 <option value={0}>Game default</option>
                 {Array.from({ length: 9 }, (_, i) => i + 1).map((lives) => <option key={lives} value={lives}>{lives}</option>)}
               </select>
             </label>
-            <p className="text-xs text-zinc-400">Applies when starting a new game from the title screen. Saved games keep their lives.</p>
+            {state.startingLives > 0 && (
+              <button className="secondary w-full" disabled={state.busy}
+                onClick={() => void game?.setStartingLives(state.startingLives)}>
+                Set lives to {state.startingLives}
+              </button>
+            )}
+            <p className="text-xs text-zinc-400">Choosing 1–9 sets your current lives and starting lives for new games. Game default affects only new games.</p>
             <label className="flex items-center justify-between gap-3 text-sm text-zinc-300">
               Display
               <select

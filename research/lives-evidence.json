@@ -15,5 +15,16 @@
   "after_save_restore": 9,
   "default_graphics_snapshots_matching_baseline": 501,
   "hud_frame_sha256": "97ac73000df84a74b1532306cfe6844ade9c2cf166653af32a369c9d7b9362c0",
-  "limitations": "Opening route and save preservation verified; no automated death/game-over route in this pass."
+  "limitations": "Opening route and save preservation verified; no automated death/game-over route in this pass.",
+  "live_edit": {
+    "restored_lives": 5,
+    "selected_lives": 9,
+    "observed_lives": 9,
+    "hud_ones_tile": 11,
+    "hud_ones_digit": 9,
+    "ticks_until_hud_check": 30,
+    "after_save_restore": 9,
+    "default_and_invalid_leave_current_unchanged": true,
+    "hud_frame_sha256": "97ac73000df84a74b1532306cfe6844ade9c2cf166653af32a369c9d7b9362c0"
+  }
 }

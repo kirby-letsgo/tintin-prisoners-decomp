@@ -11,6 +11,12 @@ static GBContext *game;
 static int16_t pcm[TT_AUDIO_FRAMES * 2];
 static uint32_t samples;
 
+/* Explicit menu edits affect this run once. The guest remains responsible for
+   losing/earning lives and redrawing its HUD. Startup/save restore never calls this. */
+void tt_apply_lives(uint8_t lives) {
+    if (game && lives >= 1 && lives <= 9) game->wram[0x1f87] = lives;
+}
+
 #ifdef TT_ASSET_CAPTURE
 #include "ppu.h"
 /* Debug-only, versioned portable snapshot taken at the PPU frame-complete safepoint. */

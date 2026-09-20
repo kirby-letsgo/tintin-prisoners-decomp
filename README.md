@@ -77,8 +77,9 @@ keep original timing; the readable C reference explains the same data flow.
 Open the pause menu with Escape (or the phone menu button). Display offers
 Original pixels, Smooth, LCD grid and CRT scanlines; effects run in the frontend
 and the selection is remembered. Devices without WebGL retain the original
-Canvas renderer. Starting lives offers Game default (difficulty-dependent) or 1–9, applies to a new game
-from the title screen, and does not change lives in an existing save.
+Canvas renderer. Lives offers Game default (difficulty-dependent) or 1–9. Choosing
+a number changes the current game once and sets starting lives for new games.
+Reopening or restoring a save keeps its saved lives; Game default affects only new games.
 
 2× sprite packs can be loaded from the pause menu. Edit the single PNG in
 `assets/replacements/`, build it with `tools/sprite_pack.py`, and import the

@@ -103,9 +103,10 @@ export class Player {
   }
   async setStartingLives(lives: number) {
     try {
-      await invoke("set_starting_lives", { lives });
+      await invoke("set_starting_lives", { lives, applyCurrent: true });
       this.update({ startingLives: lives });
       try { localStorage.setItem("starting-lives", String(lives)); } catch {}
+      this.message(lives === 0 ? "Game default applies to the next new game." : `Lives set to ${lives}.`);
     } catch (error) { this.message(String(error), true); }
   }
   setDisplayMode(displayMode: DisplayMode) {
@@ -261,7 +262,7 @@ export class Player {
           "Choose the 1 MiB Europe edition of Tintin: Prisoners of the Sun.",
         );
       const bytes = await readFile(selected);
-      await invoke("set_starting_lives", { lives: this.state.startingLives });
+      await invoke("set_starting_lives", { lives: this.state.startingLives, applyCurrent: false });
       const warning = await invoke<string>("load_rom", bytes);
       try {
         localStorage.setItem("last-rom-location", selected);
@@ -292,7 +293,7 @@ export class Player {
     this.update({ busy: true, message: "", error: false });
     await this.ensureAudio();
     try {
-      await invoke("set_starting_lives", { lives: this.state.startingLives });
+      await invoke("set_starting_lives", { lives: this.state.startingLives, applyCurrent: false });
       const warning = await invoke<string>("load_recent");
       this.update({
         loaded: true,

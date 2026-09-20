@@ -12,16 +12,21 @@ counter at `00:2AC0` and stores it at `00:2AC1`; extra-life paths increment it a
 `02:616B` and `03:6F51`.
 
 The player exposes **Game default** (0 internally) and explicit values **1–9**.
-Only the result of the table read at `00:0A8A` is overridden. The original read,
+For new games, the result of the table read at `00:0A8A` is overridden. The original read,
 instruction timing, flags, and subsequent store remain in place. This is an
 intentional gameplay modification, separate from the semantic naming work.
 Game default preserves the difficulty table and the original replay output.
 
-The setter does not write guest RAM. It is serialized with game execution by the
-Rust core mutex. Changing the preference affects the next initialization; it does
-not replenish lives in a running game. Loading a save retains that save's counter.
-The frontend remembers the choice and supplies it before loading the ROM.
-Use the pause menu before starting a new game from the game's title screen.
+The initial-lives setter controls only the next initialization. Explicit menu
+changes additionally call `tt_apply_lives`, which writes bank-1 WRAM `$DF87` once
+for choices 1–9. Both operations run under the Rust core mutex. The game handles
+HUD redraws and subsequent life loss/gain normally; this is not an infinite-lives
+patch. Choosing Game default leaves the current counter alone.
+
+The frontend passes `applyCurrent: true` only for an explicit menu edit. Startup
+passes false before loading the ROM, and save restoration does not call the live
+setter. Saved progress therefore retains earned/lost lives across sessions. This
+fixes selecting 9 after auto-resuming a save that still contains 5.
 
 ## Validation
 
@@ -35,6 +40,9 @@ The local-ROM test rejects out-of-range values, changes the preference from game
 default to 9 at the title screen, checks the actual counter at gameplay frame
 3300, changes the preference to 1, and verifies the running and restored save
 still retain 9 lives. It emits `logs/lives-nine.rgba` for HUD inspection.
+The test also restores a five-life state, applies nine live, verifies the HUD
+VRAM digit becomes 9, and checks that the change survives saving/restoring.
+Game default and invalid live values leave the current counter unchanged.
 The game-default replay is compared with the original snapshots separately.
 
 An earlier candidate, `$C3F8`, was rejected because the gameplay test read zero

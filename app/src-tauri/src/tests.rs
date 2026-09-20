@@ -225,11 +225,39 @@ mod asset_capture {
             9,
             "Loading a save must retain its lives"
         );
+        // Reproduce the reported case: an autosave with five lives is resumed,
+        // then the user explicitly selects nine in the pause menu.
+        unsafe { tt_apply_lives(5) };
+        save_to(&save).unwrap();
+        restore_from(&save).unwrap();
+        assert_eq!(unsafe { tt_debug_lives() }, 5);
+        unsafe {
+            assert_eq!(tintin_set_initial_lives(9), 1);
+            tt_apply_lives(9);
+        }
+        assert_eq!(unsafe { tt_debug_lives() }, 9);
+        for _ in 0..30 {
+            assert!(unsafe { tt_tick(0, packet.as_mut_ptr(), packet.len()) } > 0);
+        }
+        let mut graphics = vec![0; 32 + 16384 + 160 + 128 + 160 * 144 * 4];
+        assert_eq!(unsafe { tt_graphics_snapshot(graphics.as_mut_ptr(), graphics.len()) }, graphics.len());
+        assert_eq!(graphics[32 + 0x1e28], 11, "HUD ones digit must be 9 (tile offset 2)");
+        std::fs::write(root.join("logs/lives-live-nine.rgba"), &packet[8..8 + 160 * 144 * 4]).unwrap();
+        save_to(&save).unwrap();
+        unsafe { tt_apply_lives(3) };
+        assert_eq!(unsafe { tt_debug_lives() }, 3);
+        restore_from(&save).unwrap();
+        assert_eq!(unsafe { tt_debug_lives() }, 9, "Explicit edits persist in saves");
+        unsafe {
+            tt_apply_lives(0);
+            tt_apply_lives(10);
+        }
+        assert_eq!(unsafe { tt_debug_lives() }, 9, "Default/invalid values must not overwrite current lives");
         unsafe {
             tt_close();
             tintin_set_initial_lives(0);
         }
-        println!("Verified nine starting lives through frame {frame}; option changes and save restoration preserve live progress.");
+        println!("Verified new-game lives, live 5→9 edit, HUD redraw, and save restoration.");
     }
     #[test]
     #[ignore = "local ROM and generated sprite template required"]
