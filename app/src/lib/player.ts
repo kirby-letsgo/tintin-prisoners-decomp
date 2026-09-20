@@ -1,6 +1,6 @@
 import { levels } from "./levels";
 import { compileSpritePack, MAX_SPRITE_FILE } from "./spritePack";
-import { GameDisplay, readDisplayMode, type DisplayMode } from "./display";
+import { GameDisplay, readDisplayMode, readScalingMode, type ScalingMode, type DisplayMode } from "./display";
 import { invoke } from "@tauri-apps/api/core";
 import { open, save as saveDialog } from "@tauri-apps/plugin-dialog";
 import { readFile, writeFile, stat } from "@tauri-apps/plugin-fs";
@@ -15,6 +15,7 @@ export type PlayerState = {
   startingLives: number;
   selectedLevel: number;
   displayMode: DisplayMode;
+  scalingMode: ScalingMode;
   shadersSupported: boolean;
   message: string;
   error: boolean;
@@ -29,6 +30,7 @@ export const initialState: PlayerState = {
   startingLives: 0,
   selectedLevel: 0,
   displayMode: "original",
+  scalingMode: "integer",
   shadersSupported: true,
   message: "",
   error: false,
@@ -65,7 +67,7 @@ export class Player {
     this.update({ shadersSupported: this.display.supported });
     const displayMode = this.display.supported ? readDisplayMode() : "original";
     this.display.setMode(displayMode);
-    this.update({ displayMode });
+    this.update({ displayMode, scalingMode: readScalingMode() });
     try {
       const lives = Number(localStorage.getItem("starting-lives"));
       if (Number.isInteger(lives) && lives >= 0 && lives <= 9)
@@ -139,6 +141,11 @@ export class Player {
     } catch (error) {
       this.message(String(error), true);
     }
+  }
+  setScalingMode(scalingMode: ScalingMode) {
+    this.display.setScaling(scalingMode);
+    this.update({ scalingMode });
+    try { localStorage.setItem("display-scaling", scalingMode); } catch {}
   }
   setDisplayMode(displayMode: DisplayMode) {
     this.display.setMode(displayMode);
@@ -295,6 +302,7 @@ export class Player {
         applyCurrent: false,
       });
       await invoke("start_level", { scene: this.state.selectedLevel });
+      this.display.clear();
       this.update({ loaded: true, busy: false, message: "", error: false });
       await this.resume();
     } catch (error) {
@@ -354,6 +362,7 @@ export class Player {
         this.update({ message: "Starting level…" });
         await invoke("start_level", { scene: level });
       }
+      this.display.clear();
       this.update({
         loaded: true,
         recent: true,
@@ -385,6 +394,7 @@ export class Player {
         applyCurrent: false,
       });
       const warning = await invoke<string>("load_recent");
+      this.display.clear();
       this.update({
         loaded: true,
         busy: false,

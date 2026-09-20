@@ -1,3 +1,5 @@
+import { frameViewport, readScalingMode, type ScalingMode } from "./viewport";
+export { readScalingMode, type ScalingMode } from "./viewport";
 /** Frontend-only display effects. The native frame and save data stay untouched. */
 export const displayModes = {
   original: "Original pixels",
@@ -27,10 +29,12 @@ const fragmentSource = `
 precision mediump float;
 uniform sampler2D frame;
 uniform int effect;
+uniform float effectVisibility;
 varying vec2 uv;
 void main() {
   vec3 color = texture2D(frame, uv).rgb;
   vec2 pixel = fract(uv * vec2(160.0, 144.0));
+  vec3 original = color;
   if (effect == 2) {
     float grid = 0.82 + 0.18 * step(0.16, pixel.x) * step(0.16, pixel.y);
     color = mix(color, vec3(0.12, 0.15, 0.10), 0.06) * grid;
@@ -40,7 +44,7 @@ void main() {
     float vignette = 0.8 + 0.2 * pow(16.0 * edge.x * edge.y, 0.25);
     color *= scanline * vignette;
   }
-  gl_FragColor = vec4(color, 1.0);
+  gl_FragColor = vec4(mix(original, color, effectVisibility), 1.0);
 }`;
 
 export class GameDisplay {
@@ -50,6 +54,8 @@ export class GameDisplay {
   private buffer: WebGLBuffer | null = null;
   private texture: WebGLTexture | null = null;
   private mode: DisplayMode = "original";
+  private scaling: ScalingMode = readScalingMode();
+  private sourceCanvas = document.createElement("canvas");
   private frameWidth = 160;
   private frameHeight = 144;
   private textureWidth = 160;
@@ -69,10 +75,12 @@ export class GameDisplay {
     canvas.addEventListener("webglcontextrestored", this.restored);
     this.observer = new ResizeObserver(() => this.draw());
     this.observer.observe(canvas);
+    window.addEventListener("resize", this.resized);
   }
   get supported() {
     return !!this.gl;
   }
+  private resized = () => this.draw();
   private lost = (event: Event) => {
     event.preventDefault();
   };
@@ -135,6 +143,14 @@ export class GameDisplay {
     this.textureHeight = this.frameHeight;
     gl.uniform1i(gl.getUniformLocation(this.program, "frame"), 0);
   }
+  setScaling(mode: ScalingMode) {
+    this.scaling = mode;
+    this.draw();
+  }
+  clear() {
+    this.lastFrame.fill(0);
+    this.draw();
+  }
   setMode(mode: DisplayMode) {
     this.mode = mode;
     this.draw();
@@ -157,40 +173,34 @@ export class GameDisplay {
   }
   private draw() {
     if (this.disposed) return;
-    const gl = this.gl;
-    if (!gl) {
-      this.canvas.width = this.frameWidth;
-      this.canvas.height = this.frameHeight;
-      this.context2d?.putImageData(
-        new ImageData(
-          new Uint8ClampedArray(this.lastFrame),
-          this.frameWidth,
-          this.frameHeight,
-        ),
-        0,
-        0,
-      );
-      return;
-    }
-    if (gl.isContextLost()) return;
-    // Fit an exact 10:9 surface. Keep effects aligned with game pixels, not letterboxes.
     const rect = this.canvas.getBoundingClientRect();
-    const scale = Math.max(
-      this.frameWidth / 160,
-      Math.min(
-        8,
-        Math.ceil(
-          Math.min(rect.width / 160, rect.height / 144) * devicePixelRatio,
-        ),
-      ),
-    );
-    const width = 160 * scale,
-      height = 144 * scale;
+    if (!rect.width || !rect.height) return;
+    const width = Math.max(1, Math.round(rect.width * window.devicePixelRatio));
+    const height = Math.max(1, Math.round(rect.height * window.devicePixelRatio));
+    const view = frameViewport(width, height, this.frameWidth, this.frameHeight, this.scaling);
     if (this.canvas.width !== width || this.canvas.height !== height) {
       this.canvas.width = width;
       this.canvas.height = height;
     }
-    gl.viewport(0, 0, width, height);
+    const gl = this.gl;
+    if (!gl) {
+      const ctx = this.context2d;
+      if (!ctx) return;
+      this.sourceCanvas.width = this.frameWidth;
+      this.sourceCanvas.height = this.frameHeight;
+      this.sourceCanvas.getContext("2d")!.putImageData(new ImageData(
+        new Uint8ClampedArray(this.lastFrame), this.frameWidth, this.frameHeight,
+      ), 0, 0);
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, 0, width, height);
+      ctx.imageSmoothingEnabled = this.mode === "smooth";
+      ctx.drawImage(this.sourceCanvas, view.x, view.y, view.width, view.height);
+      return;
+    }
+    if (gl.isContextLost()) return;
+    gl.clearColor(0, 0, 0, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.viewport(view.x, height - view.y - view.height, view.width, view.height);
     gl.useProgram(this.program);
     gl.bindTexture(gl.TEXTURE_2D, this.texture);
     const filter = this.mode === "smooth" ? gl.LINEAR : gl.NEAREST;
@@ -230,11 +240,15 @@ export class GameDisplay {
       gl.getUniformLocation(this.program!, "effect"),
       ["original", "smooth", "lcd", "crt"].indexOf(this.mode),
     );
+    // A subpixel grid aliases at tiny sizes; fade it in once pixels have room.
+    gl.uniform1f(gl.getUniformLocation(this.program!, "effectVisibility"),
+      Math.max(0, Math.min(1, (view.width / 160 - 1) / 2)));
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
   dispose() {
     this.disposed = true;
     this.observer.disconnect();
+    window.removeEventListener("resize", this.resized);
     this.canvas.removeEventListener("webglcontextlost", this.lost);
     this.canvas.removeEventListener("webglcontextrestored", this.restored);
     this.gl?.deleteTexture(this.texture);

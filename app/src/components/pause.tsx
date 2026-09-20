@@ -1,5 +1,5 @@
 import { Player, PlayerState } from "../lib/player";
-import { displayModes, type DisplayMode } from "../lib/display";
+import { displayModes, type ScalingMode, type DisplayMode } from "../lib/display";
 
 export const Pause = ({
   state,
@@ -9,8 +9,8 @@ export const Pause = ({
   game: Player;
 }) => {
   return (
-    <div className="absolute inset-0 flex items-center justify-center bg-black/80 p-6 text-white">
-      <section className="max-h-full w-full max-w-xs space-y-3 overflow-y-auto">
+    <div className="pause-overlay absolute inset-0 flex items-center justify-center bg-black/70 p-6 text-white">
+      <section className="pause-panel max-h-full w-full max-w-sm space-y-3 overflow-y-auto rounded-2xl border border-white/10 bg-zinc-950/95 p-5 shadow-2xl">
         <button
           className="primary w-full"
           disabled={state.busy}
@@ -130,6 +130,20 @@ export const Pause = ({
             ))}
           </select>
         </label>
+        <label className="flex items-center justify-between gap-3 text-sm text-zinc-300">
+          Scaling
+          <select aria-label="Pixel scaling" className="secondary max-w-48"
+            value={state.scalingMode}
+            onChange={(event) => game.setScalingMode(event.target.value as ScalingMode)}>
+            <option value="integer">Whole pixels</option>
+            <option value="fit">Fit screen</option>
+          </select>
+        </label>
+        <p className="text-xs text-zinc-400">
+          {state.scalingMode === "integer"
+            ? "Even pixel sizes with a little extra space around the game."
+            : "The largest picture that fits, keeping the original proportions."}
+        </p>
         {!state.shadersSupported && (
           <p className="text-xs text-zinc-400">
             Display effects are unavailable on this device.

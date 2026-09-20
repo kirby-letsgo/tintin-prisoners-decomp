@@ -1,6 +1,6 @@
 import { levels } from "./lib/levels";
 
-import { useState, type ReactNode, type PointerEvent } from "react";
+import { useState } from "react";
 import { usePlayer } from "./lib/usePlayer";
 import { Pause } from "./components/pause";
 import { MobileControls } from "./components/mobile-controls";
@@ -22,7 +22,7 @@ export default function App() {
     <main
       className={
         state.loaded
-          ? "fixed inset-0 bg-black"
+          ? "game-stage fixed inset-0 bg-black"
           : "flex min-h-dvh items-center justify-center bg-zinc-950 px-6 py-10 text-zinc-100"
       }
     >
@@ -32,10 +32,10 @@ export default function App() {
         height={144}
         tabIndex={0}
         aria-label="Tintin game screen"
-        className={`game-screen ${state.loaded ? "" : "hidden"}`}
+        className={`game-screen ${state.loaded ? "screen-enter" : "hidden"}`}
       />
       {!state.loaded && (
-        <section className="w-full max-w-sm">
+        <section className="menu-enter w-full max-w-sm">
           <h1 className="mb-6 text-xl font-medium tracking-tight">
             Tintin · Prisoners of the Sun
           </h1>
@@ -123,7 +123,12 @@ export default function App() {
           )}
         </section>
       )}
-      {state.loaded && !state.playing && <Pause state={state} game={game!} />}
+      {state.loaded && (
+        <div className={`pause-layer ${state.playing ? "is-hidden" : ""}`}
+          aria-hidden={state.playing} inert={state.playing}>
+          <Pause state={state} game={game!} />
+        </div>
+      )}
       {state.loaded && state.playing && (
         <MobileControls state={state} game={game!} />
       )}
