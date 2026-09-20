@@ -2,7 +2,9 @@
 
 The original scene directory is in ROM bank 6 at `$471C`, with 32 records of
 10 bytes. Each record has a two-byte scene-data pointer, a four-character scene
-code, and introduction/chapter data. IDs 0–30 are selectable scenes. ID 31 (`FINI`)
+code, and introduction/chapter data. IDs 0–30 are supported scene starts. The UI groups them into 16 main levels,
+using scene IDs 0, 5, 6, 10, 11, 12, 14, 17, 20, 21, 22, 23, 24, 25, 29, and 30.
+Only the first area of each main level appears in the selector. ID 31 (`FINI`)
 returns to the title/ending path and is deliberately excluded. UI names describe
 the captured scenes; they are not claimed to be original published level names.
 
@@ -50,7 +52,8 @@ frame hashes. Native captures were inspected as a contact sheet, including the
 special stages. This verifies level entry and save restoration, not completion of
 every level or every possible inter-level story transition.
 
-A temporary browser harness using mocked native commands verifies all 31 options,
+The initial temporary browser harness using mocked native commands verified the
+original 31-option selector,
 scene 22 invocation for Snow, game-only display after launch, and autosave before
 returning to the main menu. The production TypeScript/Vite build is checked too.
 

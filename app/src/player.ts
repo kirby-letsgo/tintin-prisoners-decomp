@@ -1,3 +1,4 @@
+import { levels } from "./levels";
 import { compileSpritePack, MAX_SPRITE_FILE } from "./spritePack";
 import { GameDisplay, readDisplayMode, type DisplayMode } from "./display";
 import { invoke } from "@tauri-apps/api/core";
@@ -238,7 +239,7 @@ export class Player {
       await (this.state.playing ? this.pause() : this.resume());
   }
   selectLevel(selectedLevel: number) {
-    if (!this.state.busy && Number.isInteger(selectedLevel) && selectedLevel >= 0 && selectedLevel <= 30)
+    if (!this.state.busy && levels.some((level) => level.id === selectedLevel))
       this.update({ selectedLevel });
   }
   async startLevel() {

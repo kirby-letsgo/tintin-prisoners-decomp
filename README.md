@@ -89,9 +89,9 @@ and the opening-scene coverage of the starter sheet.
 
 ### Level select
 
-Choose a scene from **Level select** on the main screen, then **Start selected
-level**. All 31 playable scene entries are available, including alternate rooms
-and the car, snow, and puzzle stages. Your ROM is still required. Chapter
+Choose a main level from **Level select** on the main screen, then **Start selected
+level**. The 16 entries each start at the first area; rooms and later areas progress
+normally. The car, snow, and puzzle stages have their own entries. Your ROM is still required. Chapter
 introductions are skipped; dialogue inside levels remains. Starts use your lives
 setting and a fresh game state.
 
