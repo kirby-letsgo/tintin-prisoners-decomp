@@ -10,9 +10,7 @@ export default function App() {
   return (
     <main
       className={
-        state.loaded
-          ? "game-stage fixed inset-0 bg-black"
-          : menu.shell
+        state.loaded ? "game-stage fixed inset-0 bg-black" : menu.shell
       }
     >
       <canvas
@@ -25,8 +23,11 @@ export default function App() {
       />
       {!state.loaded && <StartMenu state={state} game={game} />}
       {state.loaded && (
-        <div className={`pause-layer ${state.playing ? "is-hidden" : ""}`}
-          aria-hidden={state.playing} inert={state.playing}>
+        <div
+          className={`pause-layer ${state.playing ? "is-hidden" : ""}`}
+          aria-hidden={state.playing}
+          inert={state.playing}
+        >
           <Pause state={state} game={game!} />
         </div>
       )}

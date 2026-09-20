@@ -1,6 +1,12 @@
 import { levels } from "./levels";
 import { compileSpritePack, MAX_SPRITE_FILE } from "./spritePack";
-import { GameDisplay, readDisplayMode, readScalingMode, type ScalingMode, type DisplayMode } from "./display";
+import {
+  GameDisplay,
+  readDisplayMode,
+  readScalingMode,
+  type ScalingMode,
+  type DisplayMode,
+} from "./display";
 import { invoke } from "@tauri-apps/api/core";
 import { open, save as saveDialog } from "@tauri-apps/plugin-dialog";
 import { readFile, writeFile, stat } from "@tauri-apps/plugin-fs";
@@ -145,7 +151,9 @@ export class Player {
   setScalingMode(scalingMode: ScalingMode) {
     this.display.setScaling(scalingMode);
     this.update({ scalingMode });
-    try { localStorage.setItem("display-scaling", scalingMode); } catch {}
+    try {
+      localStorage.setItem("display-scaling", scalingMode);
+    } catch {}
   }
   setDisplayMode(displayMode: DisplayMode) {
     this.display.setMode(displayMode);

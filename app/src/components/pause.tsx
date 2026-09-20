@@ -15,7 +15,9 @@ export const Pause = ({
 }) => {
   return (
     <div className="absolute inset-0 flex items-center justify-center bg-black/60 px-5 pt-[max(24px,env(safe-area-inset-top))] pb-[max(24px,env(safe-area-inset-bottom))]">
-      <section className={`${menu.panel} max-h-full w-full max-w-sm space-y-3 overflow-y-auto overscroll-contain [scrollbar-color:#84975f_#cfdda6] [scrollbar-width:thin]`}>
+      <section
+        className={`${menu.panel} max-h-full w-full max-w-sm space-y-3 overflow-y-auto overscroll-contain [scrollbar-color:#84975f_#cfdda6] [scrollbar-width:thin]`}
+      >
         <button
           className={`${menu.primary} w-full`}
           disabled={state.busy}
@@ -41,7 +43,10 @@ export const Pause = ({
         </div>
         <details className={`${menu.details} mt-4`}>
           <summary className={menu.summary}>
-            Picture & sound<span aria-hidden="true" className={menu.indicator}>+</span>
+            Picture & sound
+            <span aria-hidden="true" className={menu.indicator}>
+              +
+            </span>
           </summary>
           <div className={menu.content}>
             <label className="flex items-center justify-between gap-3 text-xs text-inherit">
@@ -114,7 +119,10 @@ export const Pause = ({
         </details>
         <details className={`${menu.details} mt-4`}>
           <summary className={menu.summary}>
-            Game options<span aria-hidden="true" className={menu.indicator}>+</span>
+            Game options
+            <span aria-hidden="true" className={menu.indicator}>
+              +
+            </span>
           </summary>
           <div className={menu.content}>
             <label className="flex items-center justify-between gap-3 text-xs text-inherit">
@@ -153,7 +161,10 @@ export const Pause = ({
         </details>
         <details className={`${menu.details} mt-4`}>
           <summary className={menu.summary}>
-            Save files & ROM<span aria-hidden="true" className={menu.indicator}>+</span>
+            Save files & ROM
+            <span aria-hidden="true" className={menu.indicator}>
+              +
+            </span>
           </summary>
           <div className={menu.content}>
             <div className="flex gap-3">

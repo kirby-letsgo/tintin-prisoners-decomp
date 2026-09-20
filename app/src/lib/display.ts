@@ -176,8 +176,17 @@ export class GameDisplay {
     const rect = this.canvas.getBoundingClientRect();
     if (!rect.width || !rect.height) return;
     const width = Math.max(1, Math.round(rect.width * window.devicePixelRatio));
-    const height = Math.max(1, Math.round(rect.height * window.devicePixelRatio));
-    const view = frameViewport(width, height, this.frameWidth, this.frameHeight, this.scaling);
+    const height = Math.max(
+      1,
+      Math.round(rect.height * window.devicePixelRatio),
+    );
+    const view = frameViewport(
+      width,
+      height,
+      this.frameWidth,
+      this.frameHeight,
+      this.scaling,
+    );
     if (this.canvas.width !== width || this.canvas.height !== height) {
       this.canvas.width = width;
       this.canvas.height = height;
@@ -188,9 +197,17 @@ export class GameDisplay {
       if (!ctx) return;
       this.sourceCanvas.width = this.frameWidth;
       this.sourceCanvas.height = this.frameHeight;
-      this.sourceCanvas.getContext("2d")!.putImageData(new ImageData(
-        new Uint8ClampedArray(this.lastFrame), this.frameWidth, this.frameHeight,
-      ), 0, 0);
+      this.sourceCanvas
+        .getContext("2d")!
+        .putImageData(
+          new ImageData(
+            new Uint8ClampedArray(this.lastFrame),
+            this.frameWidth,
+            this.frameHeight,
+          ),
+          0,
+          0,
+        );
       ctx.fillStyle = "black";
       ctx.fillRect(0, 0, width, height);
       ctx.imageSmoothingEnabled = this.mode === "smooth";
@@ -241,8 +258,10 @@ export class GameDisplay {
       ["original", "smooth", "lcd", "crt"].indexOf(this.mode),
     );
     // A subpixel grid aliases at tiny sizes; fade it in once pixels have room.
-    gl.uniform1f(gl.getUniformLocation(this.program!, "effectVisibility"),
-      Math.max(0, Math.min(1, (view.width / 160 - 1) / 2)));
+    gl.uniform1f(
+      gl.getUniformLocation(this.program!, "effectVisibility"),
+      Math.max(0, Math.min(1, (view.width / 160 - 1) / 2)),
+    );
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
   dispose() {
