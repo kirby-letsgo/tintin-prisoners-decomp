@@ -7,7 +7,7 @@ from pathlib import Path
 import sys
 
 folder = Path(sys.argv[1])
-files = sorted(p for p in folder.iterdir() if p.suffix in ('.apk', '.zip'))
+files = sorted(p for p in folder.iterdir() if p.suffix in ('.apk', '.zip', '.dmg'))
 assert files, 'No release packages found'
 manifest = {'commit': os.environ.get('GITHUB_SHA'), 'files': [
     {'name': p.name, 'bytes': p.stat().st_size, 'sha256': hashlib.sha256(p.read_bytes()).hexdigest()} for p in files]}

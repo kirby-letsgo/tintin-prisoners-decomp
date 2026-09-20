@@ -17,7 +17,7 @@ npm ci
 npm run tauri -- dev
 ```
 
-Release builds run in GitHub Actions. See [release instructions](../docs/releases.md)
+Release builds run in GitHub Actions. See [release instructions](../releases.md)
 for artifacts, signing, and repeatable build commands.
 
 ## Controls

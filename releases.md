@@ -4,12 +4,28 @@ Release builds run in `.github/workflows/build.yml` on pushes to `main`, version
 tags, pull requests, and Actions → Build apps → Run workflow. No ROM or private
 save is sent to CI. The tracked C sources are verified and compiled directly; no archive overwrites source edits.
 
-Download the workflow artifacts:
+Every successful push build on `main` updates the **Latest** GitHub Release at
+`releases/tag/rolling`. It contains the Apple Silicon DMG, ARM64 APK, and a combined
+checksum manifest. The `rolling` tag moves to the built commit. Pull requests,
+version tags, and manual workflow runs only produce workflow artifacts.
 
-- **Tintin-Player-macOS-arm64**: zipped Apple Silicon `.app`, ad-hoc signed.
+Publication waits for both platforms and the tool tests. It verifies each package's
+commit, size, and SHA-256 before uploading. New files have unique commit/run names;
+the previous files remain until both new packages are uploaded and the release is
+updated. Old assets are then removed. Failed builds leave the previous release
+available. Builds superseded by a newer `main` commit skip publication. Main runs
+are queued rather than cancelled mid-publication.
+
+The release job alone receives `contents: write` through the built-in GitHub token;
+no personal access token is needed. Repository rules must allow the mutable
+`rolling` tag and release (do not make this release immutable).
+
+The workflow artifacts also remain available:
+
+- **Tintin-Player-macOS-arm64**: Apple Silicon DMG and zipped `.app`, ad-hoc signed.
   It is not Apple-notarized; macOS may require allowing it in Privacy & Security.
 - **Tintin-Player-Android-arm64**: signed ARM64 APK for Android 7+.
-  Without signing secrets the filename ends in **test-signed** and uses a disposable
+  Without signing secrets the filename includes **test-signed** and uses a disposable
   test key. Export saves before uninstalling an older build to install one signed
   with a different key. This is release-mode code, not a debug APK.
 
@@ -32,7 +48,7 @@ Keep the original key backed up privately. The signing helper writes it only to 
 runner temporary directory and deletes it after signing; keys are never artifacts.
 It fails if only part of the signing configuration is supplied. Fork PRs receive
 no repository secrets and produce test-signed builds. Signed APKs are verified
-with `apksigner` before upload. No GitHub Release or app-store publishing occurs.
+with `apksigner` before upload. Only successful pushes to `main` publish a GitHub Release; no app-store publishing occurs.
 
 ## Repeatable commands (used by CI)
 
@@ -42,7 +58,7 @@ npm ci --prefix app
 npm run build --prefix app
 cargo test --locked --manifest-path app/src-tauri/Cargo.toml
 # macOS runner:
-APPLE_SIGNING_IDENTITY=- npm --prefix app run tauri -- build --ci --bundles app -- --locked
+APPLE_SIGNING_IDENTITY=- npm --prefix app run tauri -- build --ci --bundles app,dmg -- --locked
 # Android runner, JDK 17 / SDK 36 / NDK 27.1.12297006:
 npm --prefix app run tauri -- android build --ci --target aarch64 --apk
 python3 tools/sign_android.py

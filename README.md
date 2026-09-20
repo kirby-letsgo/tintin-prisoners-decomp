@@ -53,7 +53,8 @@ Run `make app-install app-dev` after generating the C core. See
 
 ## CI app packages
 
-GitHub Actions builds optimized macOS and Android packages without a ROM. See
+GitHub Actions builds optimized macOS and Android packages without a ROM. Successful
+`main` builds update the **Latest** rolling release with a DMG and APK. See
 [release builds](releases.md) and [tracked C core](app/core/README.md).
 The app has checksummed saves, previous-generation backups, and pause-menu export/import.
 

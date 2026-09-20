@@ -48,4 +48,4 @@ with tempfile.TemporaryDirectory(prefix='tintin-sign-') as temp:
         (OUT / 'SIGNING.txt').write_text(
             'Release-mode APK with a disposable CI test key. Not signed for store distribution.\n'
             'Export your save BEFORE uninstalling an older build: this APK cannot update an app signed with a different key.\n'
-            'Configure the four ANDROID_* repository secrets described in docs/releases.md for stable updates.\n')
+            'Configure the four ANDROID_* repository secrets described in releases.md for stable updates.\n')
